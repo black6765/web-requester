@@ -1,10 +1,10 @@
-package com.blue.web_requester;
+package com.blue.requester;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class WebRequesterApplicationTests {
+class RequesterApplicationTests {
 
 	@Test
 	void contextLoads() {
