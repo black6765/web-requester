@@ -29,6 +29,12 @@
         <div class="row">
           <div class="col-4">
             <div class="input-group mb-3">
+              <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
               <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" aria-describedby="btnGroupAddon" required th:value="${url}">
               <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enter</button>
             </div>

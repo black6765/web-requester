@@ -16,68 +16,73 @@
 <div layout:fragment="content" id="layoutSidenav_content">
   <main>
     <div class="container-fluid px-4">
-    <!-- 컬렉션 생성 폼 -->
-    <h3 class="my-3 border-bottom pb-2">컬렉션 생성</h3>
-    <form action="/createCollection" method="post" onsubmit="alert('요청이 전송되었습니다.')">
-      <label for="collectionName">컬렉션 이름:</label>
-      <input type="text" id="collectionName" name="collectionName" required>
-      <button type="submit">컬렉션 생성</button>
-    </form>
+      <!-- 컬렉션 생성 폼 -->
+      <h3 class="my-3 border-bottom pb-2">Collection</h3>
+      <form action="/createCollection" method="post" onsubmit="alert('요청이 전송되었습니다.')">
+        <div class="mb-3">
+          <label for="collectionName" class="form-label">Name:</label>
+          <input type="text" id="collectionName" name="collectionName" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
 
-    <hr/>
+      <hr/>
 
-    <!-- 데이터 생성 폼 -->
-      <h3 class="my-3 border-bottom pb-2">데이터 생성</h3>
-    <form action="/createData" method="post">
-      <label for="collectionListA">존재하는 컬렉션:</label>
-      <select id="collectionListA" name="collectionName" required>
-        <th:block th:each="collection : ${collectionNameList}">
-          <option th:value="${collection}" th:text="${collection}"></option>
-        </th:block>
-      </select>
+      <!-- 데이터 생성 폼 -->
+      <h3 class="my-3 border-bottom pb-2">Workspace</h3>
+      <form action="/createWorkspace" method="post">
+        <div class="mb-3">
+          <label for="collectionListA" class="form-label">Select Collection:</label>
+          <select id="collectionListA" name="collectionName" class="form-select" required>
+            <th:block th:each="collection : ${collectionNameList}">
+              <option th:value="${collection}" th:text="${collection}"></option>
+            </th:block>
+          </select>
+        </div>
 
-      <label for="dataName">데이터 이름:</label>
-      <input type="text" id="dataName" name="dataName" required>
-      <button type="submit">데이터 생성</button>
-    </form>
+        <div class="mb-3">
+          <label for="workspaceName" class="form-label">Name:</label>
+          <input type="text" id="workspaceName" name="workspaceName" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
 
-    <hr/>
+      <hr/>
 
-    <!-- 아이템 생성 폼 -->
-      <h3 class="my-3 border-bottom pb-2">아이템 생성</h3>
-      <form id="itemForm" form action="/createItem" method="post">
-        <label for="collectionListB">존재하는 컬렉션:</label>
-        <select id="collectionListB" name="collectionName" required onchange="updateDataNameList()">
-          <option>- 목록 -</option>
-          <th:block th:each="collection : ${collectionNameList}">
-            <option th:value="${collection}" th:text="${collection}"></option>
-          </th:block>
-        </select>
+      <!-- 아이템 생성 폼 -->
+      <h3 class="my-3 border-bottom pb-2">Item</h3>
+      <form id="itemForm" action="/createItem" method="post">
+        <div class="mb-3">
+          <label for="collectionListB" class="form-label">Select Collection:</label>
+          <select id="collectionListB" name="collectionName" class="form-select" required onchange="updateWorkspaceNameList()">
+            <option>- 목록 -</option>
+            <th:block th:each="collection : ${collectionNameList}">
+              <option th:value="${collection}" th:text="${collection}"></option>
+            </th:block>
+          </select>
+        </div>
 
-        <label for="dataNameItem">존재하는 데이터:</label>
-        <select id="dataNameItem" name="dataName" required>
-          <!-- 데이터 목록은 자바스크립트로 업데이트 됩니다. -->
-          <option value="">데이터를 선택하세요</option>
-          <th:block th:each="data : ${dataNameList}">
-            <option th:value="${data}" th:text="${data}"></option>
-          </th:block>
-        </select>
+        <div class="mb-3">
+          <label for="workspaceNameList" class="form-label">Select Workspace:</label>
+          <select id="workspaceNameList" name="workspaceName" class="form-select" required>
+            <option value="">- 목록 -</option>
+            <th:block th:each="workspaceName : ${workspaceNameList}">
+              <option th:value="${workspaceName}" th:text="${workspaceName}"></option>
+            </th:block>
+          </select>
+        </div>
 
-        <label for="itemName">아이템 이름:</label>
-        <input type="text" id="itemName" name="itemName" required>
+        <div class="mb-3">
+          <label for="itemName" class="form-label">Name:</label>
+          <input type="text" id="itemName" name="itemName" class="form-control" required>
+        </div>
 
         <div class="container-fluid px-4">
           <div class="row">
-            <div class="col-4">
+            <div class="col-12">
               <h6 class="my-3 border-bottom pb-2">URL</h6>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-4">
               <div class="input-group mb-3">
                 <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" required>
-                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enter</button>
               </div>
 
               <div class="mb-3">
@@ -100,7 +105,7 @@
             </div>
           </div>
         </div>
-        <button type="submit">아이템 생성</button>
+        <button type="submit" class="btn btn-primary">Create</button>
       </form>
     </div>
 
@@ -139,28 +144,27 @@
           inputGroup.remove();
       }
 
+      function updateWorkspaceNameList() {
+          const collectionName = document.getElementById('collectionListB').value;
+          const workspaceNameList = document.getElementById('workspaceNameList');
 
-        function updateDataNameList() {
-        const collectionName = document.getElementById('collectionListB').value;
-        const dataNameItem = document.getElementById('dataNameItem');
+          // 서버에서 데이터 목록을 가져오는 AJAX 요청
+          fetch(`/getWorkspaceNameList?collectionName=${collectionName}`)
+              .then(response => response.json())
+              .then(workspace => {
+                  // 기존 옵션 제거
+                  workspaceNameList.innerHTML = '';
 
-        // 서버에서 데이터 목록을 가져오는 AJAX 요청
-        fetch(`/getDataNames?collectionName=${collectionName}`)
-            .then(response => response.json())
-            .then(data => {
-                // 기존 옵션 제거
-                dataNameItem.innerHTML = '';
-
-                // 새로운 데이터 이름 목록 추가
-                data.forEach(dataName => {
-                    const option = document.createElement('option');
-                    option.value = dataName;
-                    option.textContent = dataName;
-                    dataNameItem.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching data names:', error));
-    }
+                  // 새로운 데이터 이름 목록 추가
+                  workspace.forEach(workspaceName => {
+                      const option = document.createElement('option');
+                      option.value = workspaceName;
+                      option.textContent = workspaceName;
+                      workspaceNameList.appendChild(option);
+                  });
+              })
+              .catch(error => console.error('Error fetching workspace names:', error));
+      }
     </script>
   </main>
 </div>

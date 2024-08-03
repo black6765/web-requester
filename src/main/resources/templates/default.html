@@ -37,21 +37,21 @@
                 <div class="nav">
                     <div th:each="collection : ${collections}">
                         <div class="sb-sidenav-menu-heading" th:text="${collection.key}"></div>
-                        <div th:each="data : ${collection.value}">
+                        <div th:each="workspace : ${collection.value}">
                             <a class="nav-link collapsed"
                                data-bs-toggle="collapse"
-                               th:data-bs-target="'#' + ${data.key}"
+                               th:data-bs-target="'#' + ${workspace.key}"
                                aria-expanded="false"
-                               th:aria-controls="${data.key}">
+                               th:aria-controls="${workspace.key}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                <span th:text="${data.key}"></span>
+                                <span th:text="${workspace.key}"></span>
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="collapse" th:id="${data.key}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <div class="collapse" th:id="${workspace.key}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <div th:each="item : ${data.value}">
+                                    <div th:each="item : ${workspace.value}">
                                         <a class="nav-link"
-                                           th:href="@{/request/{collectionKey}/{dataKey}/{itemKey}(collectionKey=${collection.key}, dataKey=${data.key}, itemKey=${item.key})}"
+                                           th:href="@{/request/{collectionKey}/{workspaceKey}/{itemKey}(collectionKey=${collection.key}, workspaceKey=${workspace.key}, itemKey=${item.key})}"
                                            th:text="${item.key}"></a>
                                     </div>
                                 </nav>

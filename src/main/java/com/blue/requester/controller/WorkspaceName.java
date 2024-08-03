@@ -12,20 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class DataName {
+public class WorkspaceName {
     @Autowired
     CollectionRepository collectionRepository;
 
-    @GetMapping("/getDataNames")
-    public List<String> getDataNames(@RequestParam("collectionName") String collectionName) {
-        System.out.println("DataName.getDataNames");
+    @GetMapping("/getWorkspaceNameList")
+    public List<String> getWorkspaceNameList(@RequestParam("collectionName") String collectionName) {
         // 주어진 컬렉션 이름에 따른 데이터 목록을 가져옵니다.
         Map<String, Map<String, ItemDTO>> collectionMap = collectionRepository.getStore().get(collectionName);
 
-        List<String> dataNames = new ArrayList<>(collectionMap.keySet());
-        System.out.println(collectionName);
-        System.out.println(dataNames);
-
-        return dataNames; // JSON 형식으로 반환
+        return new ArrayList<>(collectionMap.keySet()); // JSON 형식으로 반환
     }
 }

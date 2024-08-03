@@ -3,9 +3,7 @@ package com.blue.requester.controller;
 import com.blue.requester.dto.ItemDTO;
 import com.blue.requester.repository.CollectionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -21,14 +19,19 @@ import java.util.*;
 @Controller
 public class MainController {
 
-    @Autowired
+    ObjectMapper objectMapper;
+
     CollectionRepository collectionRepository;
 
+    public MainController(ObjectMapper objectMapper, CollectionRepository collectionRepository) {
+        this.objectMapper = objectMapper;
+        this.collectionRepository = collectionRepository;
+    }
 
     @PostMapping("/createItem")
     public String createItem(
             @RequestParam("collectionName") String collectionName,
-            @RequestParam("dataName") String dataName,
+            @RequestParam("workspaceName") String workspaceName,
             @RequestParam("itemName") String itemName,
             @RequestParam("url") String url,
             @RequestParam("body") String body,
@@ -48,31 +51,16 @@ public class MainController {
 
         ItemDTO itemDTO = new ItemDTO(itemName, url, headers, body);
 
-        collectionRepository.getStore().get(collectionName).get(dataName).put(itemName, itemDTO);
+        collectionRepository.getStore().get(collectionName).get(workspaceName).put(itemName, itemDTO);
 
         return "redirect:/collection";
     }
 
-    @PostMapping("/createData")
-    public String createData(@RequestParam("collectionName") String collectionName, @RequestParam("dataName") String dataName) {
-        collectionRepository.getStore().get(collectionName).put(dataName, new LinkedHashMap<>());
-
-        System.out.println("collection Name = " + collectionName);
-        for(String name : collectionRepository.getStore().get(collectionName).keySet()) {
-            System.out.println(name);
-        }
+    @PostMapping("/createWorkspace")
+    public String createWorkspace(@RequestParam("collectionName") String collectionName, @RequestParam("workspaceName") String workspaceName) {
+        collectionRepository.getStore().get(collectionName).put(workspaceName, new LinkedHashMap<>());
         return "redirect:/collection";
     }
-
-//    @GetMapping("/getDataNames")
-//    public List<String> getDataNames(@RequestParam("collectionName") String collectionName) {
-//        // 주어진 컬렉션 이름에 따른 데이터 목록을 가져옵니다.
-//        Map<String, Map<String, ItemDTO>> collectionMap = collectionRepository.getStore().get(collectionName);
-//
-//        List<String> dataNames = new ArrayList<>(collectionMap.keySet());
-//
-//        return dataNames; // JSON 형식으로 반환
-//    }
 
     @PostMapping("/createCollection")
     public String createCollection(@RequestParam("collectionName") String collectionName) {
@@ -87,8 +75,6 @@ public class MainController {
         Map<String, Map<String, Map<String, ItemDTO>>> store = collectionRepository.getStore();
 
         List<String> collectionNameList = new ArrayList<>(store.keySet());
-
-
 
         model.addAttribute("collectionNameList", collectionNameList);
 
@@ -112,24 +98,6 @@ public class MainController {
             }
         }
 
-//        Map<String, String> DATA1 = Map.of("item 1", Base64.getEncoder().encodeToString("item 1".getBytes()), "item 2", Base64.getEncoder().encodeToString("item 2".getBytes()));
-//        Map<String, String> DATA2 = Map.of("item 3", Base64.getEncoder().encodeToString("item 3".getBytes()), "item 4", Base64.getEncoder().encodeToString("item 4".getBytes()));
-//
-//        Map<String, Object> datas1 = new TreeMap<>();
-//        datas1.put("DATA1", DATA1);
-//        datas1.put("DATA2", DATA2);
-//
-//        Map<String, String> DATA3 = Map.of("item 1", Base64.getEncoder().encodeToString("item 1".getBytes()), "item 2", Base64.getEncoder().encodeToString("item 2".getBytes()));
-//        Map<String, String> DATA4 = Map.of("item 3", Base64.getEncoder().encodeToString("item 3".getBytes()), "item 4", Base64.getEncoder().encodeToString("item 4".getBytes()));
-//
-//
-//        Map<String, Object> datas2 = new TreeMap<>();
-//        datas2.put("DATA3", DATA3);
-//        datas2.put("DATA4", DATA4);
-//
-//        Map<String, Map<String, Object>> collections = new HashMap<>();
-//        collections.put("COLLECTION1", datas1);
-//        collections.put("COLLECTION2", datas2);
         Map<String, Map<String, Map<String, ItemDTO>>> collections = (Map<String, Map<String, Map<String, ItemDTO>>>) model.getAttribute("collections");
         model.addAttribute("collections", collections);
         model.addAttribute("result", "result");
@@ -166,67 +134,20 @@ public class MainController {
         return "request";
     }
 
-    @GetMapping("/request/{collection}/{data}/{item}")
-    public String getMain(Model model, @PathVariable String collection, @PathVariable String data, @PathVariable String item) throws JsonProcessingException {
+    @GetMapping("/request/{collection}/{workspace}/{item}")
+    public String getMain(Model model, @PathVariable String collection, @PathVariable String workspace, @PathVariable String item) throws JsonProcessingException {
 
-//        Map<String, String> DATA1 = Map.of("item 1", Base64.getEncoder().encodeToString("item 1".getBytes()), "item 2", Base64.getEncoder().encodeToString("item 2".getBytes()));
-//        Map<String, String> DATA2 = Map.of("item 3", Base64.getEncoder().encodeToString("item 3".getBytes()), "item 4", Base64.getEncoder().encodeToString("item 4".getBytes()));
-//
-//        Map<String, Object> datas1 = new TreeMap<>();
-//        datas1.put("DATA1", DATA1);
-//        datas1.put("DATA2", DATA2);
-//
-//        Map<String, String> DATA3 = Map.of("item 1", Base64.getEncoder().encodeToString("item 1".getBytes()), "item 2", Base64.getEncoder().encodeToString("item 2".getBytes()));
-//        Map<String, String> DATA4 = Map.of("item 3", Base64.getEncoder().encodeToString("item 3".getBytes()), "item 4", Base64.getEncoder().encodeToString("item 4".getBytes()));
-//
-//
-//        Map<String, Object> datas2 = new TreeMap<>();
-//        datas2.put("DATA3", DATA3);
-//        datas2.put("DATA4", DATA4);
-//
-//        Map<String, Map<String, Object>> collections = new HashMap<>();
-//        collections.put("COLLECTION1", datas1);
-//        collections.put("COLLECTION2", datas2);
-//
-//        model.addAttribute("collections", collections);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Map<String, Map<String, ItemDTO>>> resultMap = collectionRepository.getStore();
 
-//        String jsonData = "{\n" +
-//                "    \"collection1\": {\n" +
-//                "        \"data1\": {\n" +
-//                "            \"item1\" : {\n" +
-//                "                \"url\":\"http://localhost:8080/basic.html\",\n" +
-//                "                \"headers\" : {\n" +
-//                "                    \"header1\":\"value1\",\n" +
-//                "                    \"header2\":\"value2\"\n" +
-//                "                },\n" +
-//                "                \"body\" : \"body\"\n" +
-//                "            }\n" +
-//                "        },\n" +
-//                "        \"data2\": {\n" +
-//                "            \"item1\" : {\n" +
-//                "                \"url\":\"http://naver.com\",\n" +
-//                "                \"headers\" : {\n" +
-//                "                    \"header1\":\"value1\",\n" +
-//                "                    \"header2\":\"value2\"\n" +
-//                "                },\n" +
-//                "                \"body\" : \"body\"\n" +
-//                "            }\n" +
-//                "        }\n" +
-//                "    }\n" +
-//                "}";
+        // 결과 출력
+        System.out.println(resultMap);
+        model.addAttribute("collections", resultMap);
 
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Map<String, Map<String, ItemDTO>>> resultMap = collectionRepository.getStore();
-
-            // 결과 출력
-            System.out.println(resultMap);
-            model.addAttribute("collections", resultMap);
-
-
-            Map<String, Map<String, ItemDTO>> collectionMap = resultMap.get(collection);
-            Map<String, ItemDTO> dataMap = collectionMap.get(data);
-            ItemDTO itemDTO = dataMap.get(item);
+        Map<String, Map<String, ItemDTO>> collectionMap = resultMap.get(collection);
+        Map<String, ItemDTO> workspaceMap = collectionMap.get(workspace);
+        ItemDTO itemDTO = workspaceMap.get(item);
 
 
         String url = itemDTO.getUrl();
