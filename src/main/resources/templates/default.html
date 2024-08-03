@@ -22,7 +22,7 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Collection</a></li>
+                <li><a class="dropdown-item" href="/collection">Collection</a></li>
                 <li><a class="dropdown-item" href="#!">Setting Environment</a></li>
                 <li><hr class="dropdown-divider" /></li>
                 <li><a class="dropdown-item" href="#!">Exit</a></li>
@@ -40,14 +40,14 @@
                         <div th:each="workspace : ${collection.value}">
                             <a class="nav-link collapsed"
                                data-bs-toggle="collapse"
-                               th:data-bs-target="'#' + ${workspace.key}"
+                               th:data-bs-target="'#ws' + ${workspace.key}"
                                aria-expanded="false"
-                               th:aria-controls="${workspace.key}">
+                               th:aria-controls="'ws' + ${workspace.key}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 <span th:text="${workspace.key}"></span>
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="collapse" th:id="${workspace.key}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <div class="collapse" th:id="'ws' + ${workspace.key}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <div th:each="item : ${workspace.value}">
                                         <a class="nav-link"

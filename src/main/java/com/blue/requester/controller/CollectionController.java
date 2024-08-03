@@ -68,10 +68,12 @@ public class CollectionController {
     @GetMapping("/collection")
     public String collection(Model model) throws JsonProcessingException {
 
-        log.info("LOGGGGIING");
+
         Map<String, Map<String, Map<String, ItemDTO>>> store = collectionRepository.getStore();
         List<String> collectionNameList = new ArrayList<>(store.keySet());
         model.addAttribute("collectionNameList", collectionNameList);
+
+        model.addAttribute("collections", collectionRepository.getStore());
 
         return "collection";
     }
