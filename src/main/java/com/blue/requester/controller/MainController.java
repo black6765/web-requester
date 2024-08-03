@@ -48,8 +48,11 @@ public class MainController {
         collections.put("COLLECTION2", datas2);
 
         model.addAttribute("collections", collections);
-        model.addAttribute("body", body);
         model.addAttribute("result", "result");
+
+        model.addAttribute("url", url);
+        model.addAttribute("headers", headers);
+        model.addAttribute("body", body);
         System.out.println(body);
 
         return "request";
@@ -78,6 +81,19 @@ public class MainController {
         collections.put("COLLECTION2", datas2);
 
         model.addAttribute("collections", collections);
+
+        Map<String, String> headersA = new LinkedHashMap<>();
+        headersA.put("1", "1");
+        headersA.put("2", "2");
+        headersA.put("3", "3");
+
+        model.addAttribute("collections", collections);
+        model.addAttribute("result", "result");
+        model.addAttribute("url", "http://");
+        model.addAttribute("headers", headersA);
+        model.addAttribute("body", "{\n" +
+                "    \"asd\":\"asd\"\n" +
+                "}");
 
         return "request";
     }

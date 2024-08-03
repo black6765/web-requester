@@ -29,16 +29,17 @@
         <div class="row">
           <div class="col-4">
             <div class="input-group mb-3">
-              <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" aria-describedby="btnGroupAddon" required>
+              <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" aria-describedby="btnGroupAddon" required th:value="${url}">
               <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enter</button>
             </div>
 
             <div class="mb-3">
               <label for="headers" class="form-label">Headers</label>
               <div id="header-container">
-                <div class="input-group mb-2">
-                  <input type="text" class="form-control" name="headersKey" placeholder="Header Key">
-                  <input type="text" class="form-control" name="headersValue" placeholder="Header Value">
+                <!-- 컨트롤러로부터 받은 헤더를 기반으로 동적으로 입력 필드 생성 -->
+                <div class="input-group mb-2" th:each="header : ${headers}">
+                  <input type="text" class="form-control" name="headersKey" placeholder="Header Key" th:value="${header.key}">
+                  <input type="text" class="form-control" name="headersValue" placeholder="Header Value" th:value="${header.value}">
                   <button class="btn btn-danger" type="button" onclick="removeHeader(this)">삭제</button>
                 </div>
               </div>
@@ -47,7 +48,7 @@
 
             <div class="mb-3">
               <label for="body" class="form-label">Body</label>
-              <textarea id="body" name="body" style="display:none;"></textarea>
+              <textarea id="body" name="body" style="display:none;" th:text="${body}"></textarea>
               <div id="editor"></div>
             </div>
           </div>
@@ -83,57 +84,26 @@
           value: '' // 기본값을 빈 문자열로 설정
       });
 
-      // 페이지 로드 시 저장된 값 복원
+      // 페이지 로드 시 컨트롤러로부터 받은 값으로 설정
       window.onload = function() {
-          const savedUrl = localStorage.getItem('url');
-          const savedBody = localStorage.getItem('body');
-          const savedHeaders = JSON.parse(localStorage.getItem('headers')) || [];
-
-          if (savedUrl) {
-              document.getElementById('url').value = savedUrl;
-          }
-          if (savedBody) {
-              editor.setValue(savedBody);
-          }
-          savedHeaders.forEach(header => {
-              addHeader(header.key, header.value);
-          });
-
-          // 서버에서 전달받은 결과를 CodeMirror에 설정
-          const responseText = document.getElementById("responseTextarea").value;
-          responseEditor.setValue(responseText || "No result found in response.");
+          const initialBody = document.getElementById("body").value;
+          editor.setValue(initialBody); // 컨트롤러로부터 받은 Body 값을 CodeMirror에 설정
       };
 
       // 폼 전송 시 JSON 데이터를 body에 설정
       document.getElementById('form').onsubmit = function() {
           const jsonValue = editor.getValue();
           document.getElementById('body').value = jsonValue; // CodeMirror에서 가져온 값을 textarea에 설정
-
-          // 로컬 스토리지에 값 저장
-          localStorage.setItem('url', document.getElementById('url').value);
-          localStorage.setItem('body', jsonValue);
-
-          // 헤더 값 저장
-          const headers = [];
-          const headerInputs = document.querySelectorAll('#header-container .input-group');
-          headerInputs.forEach(inputGroup => {
-              const key = inputGroup.querySelector('input[name="headersKey"]').value;
-              const value = inputGroup.querySelector('input[name="headersValue"]').value;
-              if (key && value) {
-                  headers.push({ key, value });
-              }
-          });
-          localStorage.setItem('headers', JSON.stringify(headers));
       };
 
       // 헤더 추가 함수
-      function addHeader(key = '', value = '') {
+      function addHeader() {
           const headerContainer = document.getElementById("header-container");
           const inputGroup = document.createElement("div");
           inputGroup.className = "input-group mb-2";
           inputGroup.innerHTML = `
-              <input type="text" class="form-control" name="headersKey" placeholder="Header Key" value="${key}">
-              <input type="text" class="form-control" name="headersValue" placeholder="Header Value" value="${value}">
+              <input type="text" class="form-control" name="headersKey" placeholder="Header Key">
+              <input type="text" class="form-control" name="headersValue" placeholder="Header Value">
               <button class="btn btn-danger" type="button" onclick="removeHeader(this)">삭제</button>
           `;
           headerContainer.appendChild(inputGroup);
