@@ -21,7 +21,7 @@
           <div class="col-4">
             <h6 class="my-3 border-bottom pb-2">URL</h6>
           </div>
-          <div class="col-4">
+          <div class="col-6">
             <h6 class="my-3 border-bottom pb-2">Response</h6>
           </div>
         </div>
@@ -59,10 +59,10 @@
             </div>
           </div>
 
-          <div class="col-4">
-            <div id="responseContainer" class="border p-2" style="height: 200px; overflow-y: auto;">
+          <div class="col-6">
+            <div id="responseContainer" class="border p-2" style="height: 400px; overflow-y: auto;">
               <div id="responseEditor">
-                <textarea id="responseTextarea" style="display:none;" th:text="${result}"></textarea>
+                <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
               </div> <!-- 응답을 표시할 CodeMirror 에디터 -->
             </div>
           </div>
@@ -94,6 +94,9 @@
       window.onload = function() {
           const initialBody = document.getElementById("body").value;
           editor.setValue(initialBody); // 컨트롤러로부터 받은 Body 값을 CodeMirror에 설정
+
+          const initialResponse = document.getElementById("responseTextarea").value;
+          responseEditor.setValue(initialResponse); // 응답 값을 CodeMirror에 설정
       };
 
       // 폼 전송 시 JSON 데이터를 body에 설정

@@ -149,7 +149,7 @@
           const workspaceNameList = document.getElementById('workspaceNameList');
 
           // 서버에서 데이터 목록을 가져오는 AJAX 요청
-          fetch(`/getWorkspaceNameList?collectionName=${collectionName}`)
+          fetch(`/workspaceNameList?collectionName=${collectionName}`)
               .then(response => response.json())
               .then(workspace => {
                   // 기존 옵션 제거

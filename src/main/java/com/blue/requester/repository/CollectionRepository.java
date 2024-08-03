@@ -11,11 +11,15 @@ public class CollectionRepository {
 
     Map<String, Map<String, Map<String, ItemDTO>>> store = new LinkedHashMap<>();
 
+    public void newStore(Map<String, Map<String, Map<String, ItemDTO>>> store) {
+        this.store = store;
+    }
+
     public void save(String collectionName, Map<String, Map<String, ItemDTO>> data) {
         store.put(collectionName, data);
     }
 
-    public  Map<String, Map<String, Map<String, ItemDTO>>> getStore() {
+    public Map<String, Map<String, Map<String, ItemDTO>>> getStore() {
         return store;
     }
 }
