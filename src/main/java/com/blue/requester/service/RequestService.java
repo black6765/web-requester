@@ -67,10 +67,10 @@ public class RequestService {
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
-                default -> "HTTP Method를 확인해주세요.";
+                default -> "Check http method setting.";
             };
         } catch (Exception e) {
-            response = "요청이 실패하였습니다.";
+            response = "Your request failed.";
         }
 
         model.addAttribute("collections", collectionRepository.getStore());
