@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org/schema/layout" layout:decorate="~{default}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/agate.min.css">-->
+  <!--  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<div layout:fragment="content" id="layoutSidenav_content">
+  <main>
+    <div class="container-fluid px-4">
+    <!-- 컬렉션 생성 폼 -->
+    <h3 class="my-3 border-bottom pb-2">컬렉션 생성</h3>
+    <form action="/createCollection" method="post" onsubmit="alert('요청이 전송되었습니다.')">
+      <label for="collectionName">컬렉션 이름:</label>
+      <input type="text" id="collectionName" name="collectionName" required>
+      <button type="submit">컬렉션 생성</button>
+    </form>
+
+    <hr/>
+
+    <!-- 데이터 생성 폼 -->
+      <h3 class="my-3 border-bottom pb-2">데이터 생성</h3>
+    <form action="/createData" method="post">
+      <label for="collectionListA">존재하는 컬렉션:</label>
+      <select id="collectionListA" name="collectionName" required>
+        <th:block th:each="collection : ${collectionNameList}">
+          <option th:value="${collection}" th:text="${collection}"></option>
+        </th:block>
+      </select>
+
+      <label for="dataName">데이터 이름:</label>
+      <input type="text" id="dataName" name="dataName" required>
+      <button type="submit">데이터 생성</button>
+    </form>
+
+    <hr/>
+
+    <!-- 아이템 생성 폼 -->
+      <h3 class="my-3 border-bottom pb-2">아이템 생성</h3>
+      <form id="itemForm" form action="/createItem" method="post">
+        <label for="collectionListB">존재하는 컬렉션:</label>
+        <select id="collectionListB" name="collectionName" required onchange="updateDataNameList()">
+          <option>- 목록 -</option>
+          <th:block th:each="collection : ${collectionNameList}">
+            <option th:value="${collection}" th:text="${collection}"></option>
+          </th:block>
+        </select>
+
+        <label for="dataNameItem">존재하는 데이터:</label>
+        <select id="dataNameItem" name="dataName" required>
+          <!-- 데이터 목록은 자바스크립트로 업데이트 됩니다. -->
+          <option value="">데이터를 선택하세요</option>
+          <th:block th:each="data : ${dataNameList}">
+            <option th:value="${data}" th:text="${data}"></option>
+          </th:block>
+        </select>
+
+        <label for="itemName">아이템 이름:</label>
+        <input type="text" id="itemName" name="itemName" required>
+
+        <div class="container-fluid px-4">
+          <div class="row">
+            <div class="col-4">
+              <h6 class="my-3 border-bottom pb-2">URL</h6>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-4">
+              <div class="input-group mb-3">
+                <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" required>
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enter</button>
+              </div>
+
+              <div class="mb-3">
+                <label for="headers" class="form-label">Headers</label>
+                <div id="header-container">
+                  <div class="input-group mb-2">
+                    <input type="text" class="form-control" name="headersKey" placeholder="Header Key" required>
+                    <input type="text" class="form-control" name="headersValue" placeholder="Header Value" required>
+                    <button class="btn btn-danger" type="button" onclick="removeHeader(this)">삭제</button>
+                  </div>
+                </div>
+                <button class="btn btn-primary" type="button" onclick="addHeader()">추가</button>
+              </div>
+
+              <div class="mb-3">
+                <label for="body" class="form-label">Body</label>
+                <textarea id="body" name="body" style="display:none;"></textarea>
+                <div id="editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="submit">아이템 생성</button>
+      </form>
+    </div>
+
+    <script>
+      // CodeMirror 인스턴스 생성
+      const editor = CodeMirror(document.getElementById("editor"), {
+          mode: "application/json",
+          lineNumbers: true,
+          lineWrapping: true,
+          theme: "default",
+          value: '' // 기본값을 빈 문자열로 설정
+      });
+
+      // 폼 전송 시 JSON 데이터를 body에 설정
+      document.getElementById('itemForm').onsubmit = function() {
+          const jsonValue = editor.getValue();
+          document.getElementById('body').value = jsonValue; // CodeMirror에서 가져온 값을 textarea에 설정
+      };
+
+      // 헤더 추가 함수
+      function addHeader() {
+          const headerContainer = document.getElementById("header-container");
+          const inputGroup = document.createElement("div");
+          inputGroup.className = "input-group mb-2";
+          inputGroup.innerHTML = `
+              <input type="text" class="form-control" name="headersKey" placeholder="Header Key">
+              <input type="text" class="form-control" name="headersValue" placeholder="Header Value">
+              <button class="btn btn-danger" type="button" onclick="removeHeader(this)">삭제</button>
+          `;
+          headerContainer.appendChild(inputGroup);
+      }
+
+      // 헤더 삭제 함수
+      function removeHeader(button) {
+          const inputGroup = button.parentElement;
+          inputGroup.remove();
+      }
+
+
+        function updateDataNameList() {
+        const collectionName = document.getElementById('collectionListB').value;
+        const dataNameItem = document.getElementById('dataNameItem');
+
+        // 서버에서 데이터 목록을 가져오는 AJAX 요청
+        fetch(`/getDataNames?collectionName=${collectionName}`)
+            .then(response => response.json())
+            .then(data => {
+                // 기존 옵션 제거
+                dataNameItem.innerHTML = '';
+
+                // 새로운 데이터 이름 목록 추가
+                data.forEach(dataName => {
+                    const option = document.createElement('option');
+                    option.value = dataName;
+                    option.textContent = dataName;
+                    dataNameItem.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching data names:', error));
+    }
+    </script>
+  </main>
+</div>
+</html>
