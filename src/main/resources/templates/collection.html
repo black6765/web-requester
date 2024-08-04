@@ -7,10 +7,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!--  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/agate.min.css">-->
   <!--  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+  <style>
+      /* CodeMirror 에디터 높이 조정 */
+      .CodeMirror {
+          border: 1px solid #ccc; /* 테두리 추가 */
+          font-size: 11px; /* 폰트 크기 설정 */
+      }
+      .border-right {
+          border-right: 1px solid #ccc; /* 경계선 추가 */
+          height: 100vh;
+      }
+  </style>
+
 </head>
 
 <div layout:fragment="content" id="layoutSidenav_content">
@@ -117,11 +127,14 @@
     <script>
 
       const editor = CodeMirror(document.getElementById("editor"), {
-          mode: "application/json",
+          mode: {name: "javascript", json: true},
           lineNumbers: true,
           lineWrapping: true,
           theme: "default",
-          value: ''
+          styleActiveLine: true, // 현재 활성화된 줄의 스타일을 적용
+          value: '',
+          foldGutter: true,
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       });
 
       document.getElementById('itemForm').onsubmit = function() {
