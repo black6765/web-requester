@@ -5,12 +5,36 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!--  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/agate.min.css">-->
-<!--  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>-->
+  <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/darcula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/selection/active-line.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/display/fullscreen.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/display/gutters.min.css"> <!-- gutters 추가 -->
+
+  <!-- CodeMirror JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/selection/active-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/display/fullscreen.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/display/gutters.min.js"></script> <!-- gutters 기능 추가 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/fold/foldcode.min.js"></script> <!-- folding 기능 추가 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/fold/foldgutter.min.js"></script> <!-- foldgutter 추가 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/fold/brace-fold.min.js"></script> <!-- 중괄호 folding 추가 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/fold/xml-fold.min.js"></script> <!-- XML folding 추가 -->
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+      /* CodeMirror 에디터 높이 조정 */
+      .CodeMirror {
+          border: 1px solid #ccc; /* 테두리 추가 */
+          font-size: 11px; /* 폰트 크기 설정 */
+      }
+      .border-right {
+          border-right: 1px solid #ccc; /* 경계선 추가 */
+          height: 100vh;
+      }
+  </style>
 </head>
 
 <div layout:fragment="content" id="layoutSidenav_content">
@@ -32,7 +56,7 @@
         </div>
 
         <div class="row">
-          <div class="col-4">
+          <div class="col-4 border-right">
             <div class="input-group mb-3">
               <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
                 <option value="GET" th:selected="${httpMethod == 'GET'}">GET</option>
@@ -45,9 +69,8 @@
             </div>
 
             <div class="mb-3">
-              <label for="headers" class="form-label">Headers</label>
+              <label class="form-label">Headers</label>
               <div id="header-container">
-                <!-- 컨트롤러로부터 받은 헤더를 기반으로 동적으로 입력 필드 생성 -->
                 <div class="input-group mb-2" th:each="header : ${headers}">
                   <input type="text" class="form-control" name="headersKey" placeholder="Header Key" th:value="${header.key}">
                   <input type="text" class="form-control" name="headersValue" placeholder="Header Value" th:value="${header.value}">
@@ -65,10 +88,9 @@
           </div>
 
           <div class="col-6">
-            <div id="responseContainer" class="border p-2" style="height: 400px; overflow-y: auto;">
-              <div id="responseEditor">
-                <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
-              </div>
+            <div class="mb-3">
+              <div id="responseEditor"></div>
+              <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
             </div>
           </div>
         </div>
@@ -76,12 +98,12 @@
     </div>
 
     <script>
-
       const editor = CodeMirror(document.getElementById("editor"), {
           mode: "application/json",
           lineNumbers: true,
           lineWrapping: true,
           theme: "default",
+          styleActiveLine: true, // 현재 활성화된 줄의 스타일을 적용
           value: ''
       });
 
@@ -89,9 +111,8 @@
           mode: "application/json",
           lineNumbers: true,
           lineWrapping: true,
-          theme: "default",
-          readOnly: true, // 읽기 전용으로 설정
-          value: '' // 기본값을 빈 문자열로 설정
+          theme: "darcula", // 테마를 'darcula'로 변경
+          styleActiveLine: true, // 현재 활성화된 줄의 스타일을 적용
       });
 
       window.onload = function() {
@@ -100,6 +121,10 @@
 
           const initialResponse = document.getElementById("responseTextarea").value;
           responseEditor.setValue(initialResponse);
+
+          // 높이를 설정
+          editor.setSize("100%", "300px");
+          responseEditor.setSize("100%", "500px");
       };
 
       document.getElementById('form').onsubmit = function() {
