@@ -18,7 +18,7 @@
     <div class="container-fluid px-4">
       <!-- 컬렉션 생성 폼 -->
       <h3 class="my-3 border-bottom pb-2">Collection</h3>
-      <form action="/createCollection" method="post" onsubmit="alert('Your request has been sent.')">
+      <form action="/collection" method="post" onsubmit="alert('Your request has been sent.')">
         <div class="mb-3">
           <label for="collectionName" class="form-label">Name:</label>
           <input type="text" id="collectionName" name="collectionName" class="form-control" required>
@@ -30,7 +30,7 @@
 
       <!-- 데이터 생성 폼 -->
       <h3 class="my-3 border-bottom pb-2">Workspace</h3>
-      <form action="/createWorkspace" method="post" onsubmit="alert('Your request has been sent.')">
+      <form action="/workspace" method="post" onsubmit="alert('Your request has been sent.')">
         <div class="mb-3">
           <label for="collectionListA" class="form-label">Select Collection:</label>
           <select id="collectionListA" name="collectionName" class="form-select" required>
@@ -52,7 +52,7 @@
 
       <!-- 아이템 생성 폼 -->
       <h3 class="my-3 border-bottom pb-2">Item</h3>
-      <form id="itemForm" action="/createItem" method="post" onsubmit="alert('Your request has been sent.')">
+      <form id="itemForm" action="/item" method="post" onsubmit="alert('Your request has been sent.')">
         <div class="mb-3">
           <label for="collectionListB" class="form-label">Select Collection:</label>
           <select id="collectionListB" name="collectionName" class="form-select" required onchange="updateWorkspaceNameList()">
