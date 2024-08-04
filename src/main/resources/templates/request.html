@@ -17,6 +17,11 @@
   <main>
     <div class="container-fluid px-4">
       <form id="form" th:action="@{/request}" method="post">
+
+        <input type="hidden" name="collectionName" th:value="${collectionName}"/>
+        <input type="hidden" name="workspaceName" th:value="${workspaceName}"/>
+        <input type="hidden" name="itemName" th:value="${itemName}"/>
+
         <div class="row">
           <div class="col-4">
             <h6 class="my-3 border-bottom pb-2">URL</h6>
@@ -30,10 +35,10 @@
           <div class="col-4">
             <div class="input-group mb-3">
               <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-                <option value="PUT">PUT</option>
-                <option value="DELETE">DELETE</option>
+                <option value="GET" th:selected="${httpMethod == 'GET'}">GET</option>
+                <option value="POST" th:selected="${httpMethod == 'POST'}">POST</option>
+                <option value="PUT" th:selected="${httpMethod == 'PUT'}">PUT</option>
+                <option value="DELETE" th:selected="${httpMethod == 'DELETE'}">DELETE</option>
               </select>
               <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" aria-describedby="btnGroupAddon" required th:value="${url}">
               <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enter</button>

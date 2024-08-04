@@ -83,6 +83,12 @@
             <div class="col-12">
               <h6 class="my-3 border-bottom pb-2">URL</h6>
               <div class="input-group mb-3">
+                <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
+                  <option value="GET">GET</option>
+                  <option value="POST">POST</option>
+                  <option value="PUT">PUT</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
                 <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" required>
               </div>
 
@@ -90,9 +96,7 @@
                 <label for="headers" class="form-label">Headers</label>
                 <div id="header-container">
                   <div class="input-group mb-2">
-                    <input type="text" class="form-control" name="headersKey" placeholder="Header Key" required>
-                    <input type="text" class="form-control" name="headersValue" placeholder="Header Value" required>
-                    <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
+
                   </div>
                 </div>
                 <button class="btn btn-primary" type="button" onclick="addHeader()">Add</button>

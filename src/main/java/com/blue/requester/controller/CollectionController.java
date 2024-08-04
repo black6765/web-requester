@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,23 +33,22 @@ public class CollectionController {
             @RequestParam("workspaceName") String workspaceName,
             @RequestParam("itemName") String itemName,
             @RequestParam("url") String url,
+            @RequestParam("httpMethod") String httpMethod,
             @RequestParam("body") String body,
-            @RequestParam("headersKey") String[] headersKeys,
-            @RequestParam("headersValue") String[] headersValues
+            @RequestParam(value = "headersKey", required = false) List<String> headersKeys,
+            @RequestParam(value = "headersValue", required = false) List<String> headersValues
     ) {
         Map<String, String> headers = new LinkedHashMap<>();
 
-        // 두 배열을 순회하며 Map에 저장
-        for (int i = 0; i < headersKeys.length; i++) {
-            if (!headersKeys[i].isEmpty() && !headersValues[i].isEmpty()) { // 키와 값이 비어있지 않다면
-                headers.put(headersKeys[i], headersValues[i]);
+        if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
+            for (int i = 0; i < headersKeys.size(); i++) {
+                if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) { // 키와 값이 비어있지 않다면
+                    headers.put(headersKeys.get(i), headersValues.get(i));
+                }
             }
         }
 
-        System.out.println(body);
-
-        ItemDTO itemDTO = new ItemDTO(itemName, workspaceName, url, headers, body);
-
+        ItemDTO itemDTO = new ItemDTO(itemName, workspaceName, url, httpMethod, headers, body);
         collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().put(itemName, itemDTO);
 
         return "redirect:/collection";
@@ -62,18 +63,14 @@ public class CollectionController {
     @PostMapping("/createCollection")
     public String createCollection(@RequestParam("collectionName") String collectionName) {
         collectionRepository.save(collectionName, new CollectionDTO(collectionName, new LinkedHashMap<>()));
-
         return "redirect:/collection";
     }
 
     @GetMapping("/collection")
-    public String collection(Model model) throws JsonProcessingException {
-
-
+    public String collection(Model model) {
         Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
         List<String> collectionNameList = new ArrayList<>(store.keySet());
         model.addAttribute("collectionNameList", collectionNameList);
-
         model.addAttribute("collections", store);
 
         return "collection";
