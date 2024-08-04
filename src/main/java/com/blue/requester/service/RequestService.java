@@ -2,13 +2,11 @@ package com.blue.requester.service;
 
 import com.blue.requester.dto.ItemDTO;
 import com.blue.requester.repository.CollectionRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -21,10 +19,10 @@ public class RequestService {
 
     private final CollectionRepository collectionRepository;
 
-    public String requestForm(Model model, String collection, String workspace, String item) {
-        ItemDTO itemDTO = collectionRepository.getStore().get(collection).get(workspace).get(item);
+    public String requestForm(Model model, String collectionName, String workspaceName, String itemName) {
+        ItemDTO itemDTO = collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().get(itemName);
 
-        model.addAttribute("collections", collectionRepository.getStore());
+        model.addAttribute("collections", collectionRepository.getCollectionsStore());
         model.addAttribute("url", itemDTO.getUrl());
         model.addAttribute("headers", itemDTO.getHeaders());
         model.addAttribute("body", itemDTO.getBody());
@@ -73,7 +71,7 @@ public class RequestService {
             response = "Your request failed.";
         }
 
-        model.addAttribute("collections", collectionRepository.getStore());
+        model.addAttribute("collections", collectionRepository.getCollectionsStore());
         model.addAttribute("url", url);
         model.addAttribute("headers", headers);
         model.addAttribute("body", body);

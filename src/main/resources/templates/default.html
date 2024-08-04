@@ -36,22 +36,22 @@
             <div class="sb-sidenav-menu">
                 <div class="nav">
                     <div th:each="collection : ${collections}">
-                        <div class="sb-sidenav-menu-heading" th:text="${collection.key}"></div>
-                        <div th:each="workspace : ${collection.value}">
+                        <div class="sb-sidenav-menu-heading" th:text="${collection.value.getName()}"></div>
+                        <div th:each="workspace : ${collection.value.getWorkspaces()}">
                             <a class="nav-link collapsed"
                                data-bs-toggle="collapse"
-                               th:data-bs-target="'#ws' + ${workspace.key}"
+                               th:data-bs-target="'#ws' + ${workspace.value.getName()}"
                                aria-expanded="false"
-                               th:aria-controls="'ws' + ${workspace.key}">
+                               th:aria-controls="'ws' + ${workspace.value.getName()}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                <span th:text="${workspace.key}"></span>
+                                <span th:text="${workspace.value.getName()}"></span>
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="collapse" th:id="'ws' + ${workspace.key}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <div class="collapse" th:id="'ws' + ${workspace.value.getName()}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <div th:each="item : ${workspace.value}">
+                                    <div th:each="item : ${workspace.value.getItems()}">
                                         <a class="nav-link"
-                                           th:href="@{/request/{collectionKey}/{workspaceKey}/{itemKey}(collectionKey=${collection.key}, workspaceKey=${workspace.key}, itemKey=${item.key})}"
+                                           th:href="@{/request/{collectionKey}/{workspaceKey}/{itemKey}(collectionKey=${collection.value.getName()}, workspaceKey=${workspace.value.getName()}, itemKey=${item.value.getName()})}"
                                            th:text="${item.key}"></a>
                                     </div>
                                 </nav>

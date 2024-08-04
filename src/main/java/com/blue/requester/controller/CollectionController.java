@@ -1,10 +1,11 @@
 package com.blue.requester.controller;
 
+import com.blue.requester.dto.CollectionDTO;
 import com.blue.requester.dto.ItemDTO;
+import com.blue.requester.dto.WorkspaceDTO;
 import com.blue.requester.repository.CollectionRepository;
 import com.blue.requester.service.CollectionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -45,22 +46,22 @@ public class CollectionController {
 
         System.out.println(body);
 
-        ItemDTO itemDTO = new ItemDTO(itemName, url, headers, body);
+        ItemDTO itemDTO = new ItemDTO(itemName, workspaceName, url, headers, body);
 
-        collectionRepository.getStore().get(collectionName).get(workspaceName).put(itemName, itemDTO);
+        collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().put(itemName, itemDTO);
 
         return "redirect:/collection";
     }
 
     @PostMapping("/createWorkspace")
     public String createWorkspace(@RequestParam("collectionName") String collectionName, @RequestParam("workspaceName") String workspaceName) {
-        collectionRepository.getStore().get(collectionName).put(workspaceName, new LinkedHashMap<>());
+        collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().put(workspaceName, new WorkspaceDTO(workspaceName, collectionName, new LinkedHashMap<>()));
         return "redirect:/collection";
     }
 
     @PostMapping("/createCollection")
     public String createCollection(@RequestParam("collectionName") String collectionName) {
-        collectionRepository.save(collectionName, new LinkedHashMap<>());
+        collectionRepository.save(collectionName, new CollectionDTO(collectionName, new LinkedHashMap<>()));
 
         return "redirect:/collection";
     }
@@ -69,11 +70,11 @@ public class CollectionController {
     public String collection(Model model) throws JsonProcessingException {
 
 
-        Map<String, Map<String, Map<String, ItemDTO>>> store = collectionRepository.getStore();
+        Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
         List<String> collectionNameList = new ArrayList<>(store.keySet());
         model.addAttribute("collectionNameList", collectionNameList);
 
-        model.addAttribute("collections", collectionRepository.getStore());
+        model.addAttribute("collections", store);
 
         return "collection";
     }
@@ -82,7 +83,7 @@ public class CollectionController {
     @ResponseBody
     public List<String> getWorkspaceNameList(@RequestParam("collectionName") String collectionName) {
         // 주어진 컬렉션 이름에 따른 데이터 목록을 가져옵니다.
-        Map<String, Map<String, ItemDTO>> collectionMap = collectionRepository.getStore().get(collectionName);
-        return new ArrayList<>(collectionMap.keySet()); // JSON 형식으로 반환
+        CollectionDTO collectionMap = collectionRepository.getCollectionsStore().get(collectionName);
+        return new ArrayList<>(collectionMap.getWorkspaces().keySet()); // JSON 형식으로 반환
     }
 }

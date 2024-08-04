@@ -1,5 +1,6 @@
 package com.blue.requester.repository;
 
+import com.blue.requester.dto.CollectionDTO;
 import com.blue.requester.dto.ItemDTO;
 import org.springframework.stereotype.Component;
 
@@ -9,17 +10,18 @@ import java.util.Map;
 @Component
 public class CollectionRepository {
 
-    Map<String, Map<String, Map<String, ItemDTO>>> store = new LinkedHashMap<>();
+    Map<String, CollectionDTO> collectionsStore = new LinkedHashMap<>();
 
-    public void newStore(Map<String, Map<String, Map<String, ItemDTO>>> store) {
-        this.store = store;
+    public void newStore(Map<String, CollectionDTO> collections) {
+        this.collectionsStore = collections;
+
     }
 
-    public void save(String collectionName, Map<String, Map<String, ItemDTO>> data) {
-        store.put(collectionName, data);
+    public void save(String collectionName, CollectionDTO collection) {
+        collectionsStore.put(collectionName, collection);
     }
 
-    public Map<String, Map<String, Map<String, ItemDTO>>> getStore() {
-        return store;
+    public Map<String, CollectionDTO> getCollectionsStore() {
+        return collectionsStore;
     }
 }

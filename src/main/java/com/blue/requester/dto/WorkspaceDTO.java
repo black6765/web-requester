@@ -9,10 +9,9 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDTO {
+public class WorkspaceDTO {
+
     public String name;
-    public String workspaceName;
-    public String url;
-    public Map<String, String> headers;
-    public String body;
+    public String collectionName;
+    public Map<String, ItemDTO> items;
 }

@@ -26,7 +26,7 @@ public class ShutdownEvent implements ApplicationListener<ContextClosedEvent> {
         try {
             String collectionsFilePath = "config/collections.json";
             BufferedWriter bw = new BufferedWriter(new FileWriter(collectionsFilePath));
-            bw.write(collectionService.convertCollectionsToJson());
+            bw.write(collectionService.convertCurrentCollectionsToJson());
             bw.close();
 
             log.info("Collections saved [{}]", System.getProperty("user.dir") + collectionsFilePath);
