@@ -2,6 +2,9 @@ package com.blue.requester.service;
 
 import com.blue.requester.dto.ItemDTO;
 import com.blue.requester.repository.CollectionRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,6 +23,7 @@ import java.util.Map;
 public class RequestService {
 
     private final CollectionRepository collectionRepository;
+    private final ObjectMapper objectMapper;
 
     public String requestForm(Model model, String collectionName, String workspaceName, String itemName) {
         ItemDTO itemDTO = getItem(collectionName, workspaceName, itemName);
@@ -42,7 +46,7 @@ public class RequestService {
     }
 
     public String request(Model model, String url, List<String> headersKeys, List<String> headersValues, String body, String httpMethod,
-                          String collectionName, String workspaceName, String itemName) {
+                          String collectionName, String workspaceName, String itemName) throws JsonProcessingException {
 
         Map<String, String> headers = new HashMap<>();
 
@@ -54,19 +58,25 @@ public class RequestService {
                 .build();
 
         String response = sendRequestAndGetResponse(url, body, httpMethod, httpHeaders, client);
+        String responseJson = getStringtoPrettyJson(response);
 
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
         model.addAttribute("url", url);
         model.addAttribute("httpMethod", httpMethod);
         model.addAttribute("headers", headers);
         model.addAttribute("body", body);
-        model.addAttribute("response", response);
+        model.addAttribute("response", responseJson);
 
         model.addAttribute("collectionName", collectionName);
         model.addAttribute("workspaceName", workspaceName);
         model.addAttribute("itemName", itemName);
 
         return "request";
+    }
+
+    private String getStringtoPrettyJson(String response) throws JsonProcessingException {
+        Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<>(){});
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
     }
 
     private String sendRequestAndGetResponse(String url, String body, String httpMethod, HttpHeaders httpHeaders, WebClient client) {
