@@ -2,11 +2,6 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org/schema/layout" layout:decorate="~{default}">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
   <style>
       /* CodeMirror 에디터 높이 조정 */
       .CodeMirror {
@@ -29,16 +24,16 @@
         <input type="hidden" name="itemName" th:value="${itemName}"/>
 
         <div class="row">
-          <div class="col-4">
+          <div class="col-5">
             <h6 class="my-3 border-bottom pb-2">URL</h6>
           </div>
-          <div class="col-6">
+          <div class="col-5">
             <h6 class="my-3 border-bottom pb-2">Response</h6>
           </div>
         </div>
 
         <div class="row">
-          <div class="col-4 border-right">
+          <div class="col-5 border-right">
             <div class="input-group mb-3">
               <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
                 <option value="GET" th:selected="${httpMethod == 'GET'}">GET</option>
@@ -69,7 +64,7 @@
             </div>
           </div>
 
-          <div class="col-6">
+          <div class="col-5">
             <div class="mb-3">
               <div id="responseEditor"></div>
               <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
