@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org/schema/layout" layout:decorate="~{default}">
 
-<head>
-  <style>
-      /* CodeMirror 에디터 높이 조정 */
-      .CodeMirror {
-          border: 1px solid #ccc; /* 테두리 추가 */
-          font-size: 11px; /* 폰트 크기 설정 */
-      }
-      .border-right {
-          border-right: 1px solid #ccc; /* 경계선 추가 */
-      }
-  </style>
-</head>
-
 <div layout:fragment="content" id="layoutSidenav_content">
   <main>
     <div class="container-fluid px-4 pb-4">
@@ -24,16 +11,16 @@
         <input type="hidden" name="itemName" th:value="${itemName}"/>
 
         <div class="row">
-          <div class="col-5">
+          <div class="col-6">
             <h6 class="my-3 border-bottom pb-2">URL</h6>
           </div>
-          <div class="col-5">
+          <div class="col-6">
             <h6 class="my-3 border-bottom pb-2">Response</h6>
           </div>
         </div>
 
         <div class="row">
-          <div class="col-5 border-right">
+          <div class="col-6 border-right">
             <div class="input-group mb-3">
               <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
                 <option value="GET" th:selected="${httpMethod == 'GET'}">GET</option>
@@ -64,7 +51,7 @@
             </div>
           </div>
 
-          <div class="col-5">
+          <div class="col-6">
             <div class="mb-3">
               <div id="responseEditor"></div>
               <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
@@ -106,7 +93,7 @@
 
           // 높이를 설정
           editor.setSize("100%", "300px");
-          responseEditor.setSize("100%", "500px");
+          responseEditor.setSize("100%", "550px");
       };
 
       document.getElementById('form').onsubmit = function() {
