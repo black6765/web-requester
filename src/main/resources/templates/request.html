@@ -69,6 +69,8 @@
           theme: "default",
           styleActiveLine: true, // 현재 활성화된 줄의 스타일을 적용
           value: '',
+          autoCloseBrackets: true,
+          matchBrackets: true,
           foldGutter: true,
           gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       });
@@ -77,9 +79,10 @@
           mode: {name: "javascript", json: true},
           lineNumbers: true,
           lineWrapping: true,
-          theme: "darcula", // 테마를 'darcula'로 변경
-          styleActiveLine: true, // 현재 활성화된 줄의 스타일을 적용
+          theme: "dracula",
+          styleActiveLine: true,
           readOnly: true,
+          matchBrackets: true,
           foldGutter: true,
           gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       });
