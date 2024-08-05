@@ -1,0 +1,23 @@
+{
+  "Collection 1" : {
+    "name" : "Collection 1",
+    "workspaces" : {
+      "Workspace 1" : {
+        "name" : "Workspace 1",
+        "collectionName" : "Collection 1",
+        "items" : {
+          "Item 1" : {
+            "name" : "Item 1",
+            "CollectionName" : "Collection 1",
+            "workspaceName" : "Workspace 1",
+            "url" : "http://www.google.com",
+            "httpMethod" : "GET",
+            "headers" : { },
+            "body" : "",
+            "collectionName" : "Collection 1"
+          }
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class ItemDTO {
     public String name;
+    public String CollectionName;
     public String workspaceName;
     public String url;
     public String httpMethod;

@@ -33,13 +33,32 @@ public class CollectionService {
         return collections;
     }
 
-    public Map<String, CollectionDTO> convertJsonToCollectionsMapAndNewStore(String json) throws IOException {
+    public Map<String, CollectionDTO> convertJsonToCollectionsMapAndNewStore(final String json) throws IOException {
         Map<String, CollectionDTO> store = objectMapper.readValue(json, new TypeReference<>(){});
         collectionRepository.newStore(store);
         return store;
     }
 
-    public String createItem(String collectionName, String workspaceName, String itemName, String url, String httpMethod, String body, List<String> headersKeys, List<String> headersValues) {
+    public String collectionForm(Model model) {
+        Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
+        List<String> collectionNameList = new ArrayList<>(store.keySet());
+        model.addAttribute("collectionNameList", collectionNameList);
+        model.addAttribute("collections", store);
+
+        return "createCollectionForm";
+    }
+
+    public String createCollection(String collectionName) {
+        collectionRepository.save(collectionName, new CollectionDTO(collectionName, new LinkedHashMap<>()));
+        return "redirect:/collection/createForm";
+    }
+
+    public String createWorkspace(final String collectionName, final String workspaceName) {
+        collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().put(workspaceName, new WorkspaceDTO(workspaceName, collectionName, new LinkedHashMap<>()));
+        return "redirect:/collection/createForm";
+    }
+
+    public String createItem(final String collectionName, final String workspaceName, final String itemName, final String url, final String httpMethod, final String body, final List<String> headersKeys, List<String> headersValues) {
         Map<String, String> headers = new LinkedHashMap<>();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
@@ -50,28 +69,44 @@ public class CollectionService {
             }
         }
 
-        ItemDTO itemDTO = new ItemDTO(itemName, workspaceName, url, httpMethod, headers, body);
+        System.out.println(itemName);
+
+        ItemDTO itemDTO = new ItemDTO(itemName, collectionName, workspaceName, url, httpMethod, headers, body);
         collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().put(itemName, itemDTO);
 
-        return "redirect:/collectionForm";
+        return "redirect:/collection/createForm";
     }
 
-    public String createWorkspace(String collectionName, String workspaceName) {
-        collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().put(workspaceName, new WorkspaceDTO(workspaceName, collectionName, new LinkedHashMap<>()));
-        return "redirect:/collectionForm";
-    }
-
-    public String collectionForm(Model model) {
+    public String deleteCollection(final String collectionName, final String workspaceName, final String itemName) {
+        // 선택된 데이터 처리
         Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
-        List<String> collectionNameList = new ArrayList<>(store.keySet());
-        model.addAttribute("collectionNameList", collectionNameList);
-        model.addAttribute("collections", store);
 
-        return "collection";
+        if (ObjectUtils.isEmpty(workspaceName)) {
+            store.remove(collectionName);
+            log.info("Collection [{}] removed", collectionName);
+        } else if (ObjectUtils.isEmpty(itemName)) {
+            store.get(collectionName).getWorkspaces().remove(workspaceName);
+            log.info("Workspace [{}] <in [{}] Collection> removed", workspaceName, collectionName);
+        } else {
+            store.get(collectionName).getWorkspaces().get(workspaceName).getItems().remove(itemName);
+            log.info("Item [{}] <in [{}] Workspace in [{}] Collection> removed", itemName, workspaceName, collectionName);
+        }
+
+        return "deleteCollectionForm";
+    }
+
+    public List<String> getCollectionNameList() {
+        Map<String, CollectionDTO> collections = collectionRepository.getCollectionsStore();
+        return new ArrayList<>(collections.keySet());
     }
 
     public List<String> getWorkspaceNameList(String collectionName) {
         CollectionDTO collectionMap = collectionRepository.getCollectionsStore().get(collectionName);
         return new ArrayList<>(collectionMap.getWorkspaces().keySet());
+    }
+
+    public List<String> getItemNameList(String collectionName, String workspaceName) {
+        WorkspaceDTO workspaceMap = collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName);
+        return new ArrayList<>(workspaceMap.getItems().keySet());
     }
 }

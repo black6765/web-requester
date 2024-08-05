@@ -5,12 +5,10 @@ import com.blue.requester.repository.CollectionRepository;
 import com.blue.requester.service.CollectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +20,21 @@ public class CollectionController {
 
     private final CollectionRepository collectionRepository;
     private final CollectionService collectionService;
+
+    @GetMapping("/collection/createForm")
+    public String collectionForm(Model model) {
+        return collectionService.collectionForm(model);
+    }
+
+    @PostMapping("/collection")
+    public String createCollection(@RequestParam("collectionName") String collectionName) {
+        return collectionService.createCollection(collectionName);
+    }
+
+    @PostMapping("/workspace")
+    public String createWorkspace(@RequestParam("collectionName") String collectionName, @RequestParam("workspaceName") String workspaceName) {
+        return collectionService.createWorkspace(collectionName, workspaceName);
+    }
 
     @PostMapping("/item")
     public String createItem(
@@ -37,26 +50,38 @@ public class CollectionController {
         return collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues);
     }
 
-    @PostMapping("/workspace")
-    public String createWorkspace(@RequestParam("collectionName") String collectionName, @RequestParam("workspaceName") String workspaceName) {
-        return collectionService.createWorkspace(collectionName, workspaceName);
+    @GetMapping("/collection/deleteForm")
+    public String deleteCollection(Model model) {
+        model.addAttribute("collections", collectionRepository.getCollectionsStore());
+        return "deleteCollectionForm";
     }
 
-    @PostMapping("/collection")
-    public String createCollection(@RequestParam("collectionName") String collectionName) {
-        collectionRepository.save(collectionName, new CollectionDTO(collectionName, new LinkedHashMap<>()));
-        return "redirect:/collectionForm";
+    @DeleteMapping("/collection")
+    public String deleteCollection(
+            @RequestParam("collectionSelect") String collection,
+            @RequestParam(value = "workspaceSelect", required = false) String workspace,
+            @RequestParam(value = "itemSelect", required = false) String item) {
+
+        return collectionService.deleteCollection(collection, workspace, item);
     }
 
-    @GetMapping("/collectionForm")
-    public String collectionForm(Model model) {
-        return collectionService.collectionForm(model);
+    @GetMapping("/collectionNameList")
+    @ResponseBody
+    public List<String> getCollectionsList() {
+        return collectionService.getCollectionNameList();
     }
 
     @GetMapping("/workspaceNameList")
     @ResponseBody
     public List<String> getWorkspaceNameList(@RequestParam("collectionName") String collectionName) {
         return collectionService.getWorkspaceNameList(collectionName);
+    }
+
+    @GetMapping("/itemNameList")
+    @ResponseBody
+    public List<String> getItemeList(@RequestParam("collectionName") String collectionName,
+                                     @RequestParam("workspaceName") String workspaceName) {
+        return collectionService.getItemNameList(collectionName, workspaceName);
     }
 
 }

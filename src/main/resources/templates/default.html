@@ -34,7 +34,7 @@
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="default.html">Simple API Requester</a>
+    <a class="navbar-brand ps-3" href="/">Simple API Requester</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     <!-- Navbar-->
@@ -42,10 +42,10 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="/collectionForm">Setting Collections</a></li>
-                <li><a class="dropdown-item" href="#!">Setting Environment</a></li>
+                <li><a class="dropdown-item" href="/collection/createForm">Setting Collections</a></li>
+                <li><a class="dropdown-item" href="/collection/deleteForm">Delete Collections</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="/shutdown">shutdown</a></li>
+                <li><a class="dropdown-item" href="/shutdown">Shutdown</a></li>
             </ul>
         </li>
     </ul>
@@ -60,14 +60,14 @@
                         <div th:each="workspace : ${collection.value.getWorkspaces()}">
                             <a class="nav-link collapsed"
                                data-bs-toggle="collapse"
-                               th:data-bs-target="'#ws' + ${workspace.value.getName()}"
+                               th:data-bs-target="'#_' + ${#strings.replace(workspace.value.getName(), ' ', '_')}"
                                aria-expanded="false"
-                               th:aria-controls="'ws' + ${workspace.value.getName()}">
+                               th:aria-controls="'_' + ${#strings.replace(workspace.value.getName(), ' ', '_')}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 <span th:text="${workspace.value.getName()}"></span>
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="collapse" th:id="'ws' + ${workspace.value.getName()}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <div class="collapse" th:id="'_' + ${#strings.replace(workspace.value.getName(), ' ', '_')}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <div th:each="item : ${workspace.value.getItems()}">
                                         <a class="nav-link"
@@ -81,7 +81,7 @@
                 </div>
             </div>
             <div class="sb-sidenav-footer">
-                <div class="small">v0.0.1</div>
+                <div class="small">v0.0.2</div>
             </div>
         </nav>
     </div>

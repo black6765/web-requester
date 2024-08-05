@@ -1,6 +1,8 @@
 package com.blue.requester.service;
 
 import com.blue.requester.dto.ItemDTO;
+import com.blue.requester.exception.InvalidHttpMethodException;
+import com.blue.requester.message.ExceptionMessage;
 import com.blue.requester.repository.CollectionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,6 +16,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +28,7 @@ public class RequestService {
     private final CollectionRepository collectionRepository;
     private final ObjectMapper objectMapper;
 
-    public String requestForm(Model model, String collectionName, String workspaceName, String itemName) {
+    public String requestForm(Model model, final String collectionName, final String workspaceName, final String itemName) {
         ItemDTO itemDTO = getItem(collectionName, workspaceName, itemName);
 
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
@@ -41,12 +44,12 @@ public class RequestService {
         return "request";
     }
 
-    private ItemDTO getItem(String collectionName, String workspaceName, String itemName) {
+    private ItemDTO getItem(final String collectionName, final String workspaceName, final String itemName) {
         return collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().get(itemName);
     }
 
-    public String request(Model model, String url, List<String> headersKeys, List<String> headersValues, String body, String httpMethod,
-                          String collectionName, String workspaceName, String itemName) throws JsonProcessingException {
+    public String request(Model model, final String url, final List<String> headersKeys, final List<String> headersValues, final String body, final String httpMethod,
+                          final String collectionName, final String workspaceName, final String itemName) throws JsonProcessingException {
 
         Map<String, String> headers = new HashMap<>();
 
@@ -58,14 +61,17 @@ public class RequestService {
                 .build();
 
         String response = sendRequestAndGetResponse(url, body, httpMethod, httpHeaders, client);
-        String responseJson = getStringtoPrettyJson(response);
+
+        if (isJsonType(response)) {
+            response = getStringtoPrettyJson(response);
+        }
 
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
         model.addAttribute("url", url);
         model.addAttribute("httpMethod", httpMethod);
         model.addAttribute("headers", headers);
         model.addAttribute("body", body);
-        model.addAttribute("response", responseJson);
+        model.addAttribute("response", response);
 
         model.addAttribute("collectionName", collectionName);
         model.addAttribute("workspaceName", workspaceName);
@@ -74,17 +80,34 @@ public class RequestService {
         return "request";
     }
 
-    private String getStringtoPrettyJson(String response) throws JsonProcessingException {
+    private boolean isJsonType(String response) {
+        boolean isJsonType;
+        try {
+            objectMapper.readTree(response);
+            isJsonType = true;
+        } catch (IOException e) {
+            isJsonType = false;
+        }
+        return isJsonType;
+    }
+
+    private String getStringtoPrettyJson(final String response) throws JsonProcessingException {
         Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<>(){});
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
     }
 
-    private String sendRequestAndGetResponse(String url, String body, String httpMethod, HttpHeaders httpHeaders, WebClient client) {
-        String response = "";
+    private String sendRequestAndGetResponse(final String url, final String body, final String httpMethod, final HttpHeaders httpHeaders, final WebClient client) {
+        String responseBody = "{}";
 
         try {
-            response = switch (httpMethod) {
+            responseBody = switch (httpMethod) {
                 case "GET" -> client.get()
+                        .uri(url)
+                        .headers(h -> h.addAll(httpHeaders))
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
+                case "DELETE" -> client.delete()
                         .uri(url)
                         .headers(h -> h.addAll(httpHeaders))
                         .retrieve()
@@ -98,16 +121,27 @@ public class RequestService {
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
-                default -> "{\"msg\":\"Your request failed.\"}";
+                case "PUT" -> client.put()
+                        .uri(url)
+                        .headers(h -> h.addAll(httpHeaders))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(body))
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
+                default -> throw new InvalidHttpMethodException();
             };
+        } catch (InvalidHttpMethodException e) {
+            responseBody = ExceptionMessage.HTTP_METHOD_UNAVAILABLE;
         } catch (Exception e) {
-            response = "{\"msg\":\"Your request failed.\",}";
+            responseBody = ExceptionMessage.REQUEST_FAILED_WTIH_EXCEPTION;
         }
 
-        return response;
+        return responseBody;
     }
 
-    private void saveItem(String url, String body, String httpMethod, String collectionName, String workspaceName, String itemName, Map<String, String> headers) {
+    private void saveItem(final String url, final String body, final String httpMethod,
+                          final String collectionName, final String workspaceName, final String itemName, final Map<String, String> headers) {
         ItemDTO itemDTO = getItem(collectionName, workspaceName, itemName);
         itemDTO.setUrl(url);
         itemDTO.setHttpMethod(httpMethod);
@@ -115,7 +149,7 @@ public class RequestService {
         itemDTO.setBody(body);
     }
 
-    private HttpHeaders getHttpHeaders(List<String> headersKeys, List<String> headersValues, Map<String, String> headers) {
+    private HttpHeaders getHttpHeaders(final List<String> headersKeys, final List<String> headersValues, final Map<String, String> headers) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
