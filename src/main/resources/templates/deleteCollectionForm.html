@@ -9,13 +9,13 @@
 
 <div layout:fragment="content" id="layoutSidenav_content">
   <main>
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-4 pb-4">
 
-      <h2 class="my-3 border-bottom pb-2">Delete Collections</h2>
+      <h2 class="my-3 pb-2">Delete Collections</h2>
 
       <form id="selectionForm" onsubmit="alert('Your request has been sent.')">
         <div class="form-group mb-3">
-          <h5 class="my-3 border-bottom pb-2"><label for="collectionSelect">Collection</label></h5>
+          <h6 class="my-3 border-bottom pb-2"><label for="collectionSelect">Collection</label></h6>
           <select id="collectionSelect" class="form-control" required>
             <option value="">=== Select ===</option>
             <!-- 컬렉션 목록은 JavaScript에서 동적으로 추가됩니다. -->
@@ -23,14 +23,14 @@
         </div>
 
         <div class="form-group mb-3">
-          <h5 class="my-3 border-bottom pb-2"><label for="workspaceSelect">Workspace</label></h5>
+          <h6 class="my-3 border-bottom pb-2"><label for="workspaceSelect">Workspace</label></h6>
           <select id="workspaceSelect" class="form-control" disabled>
             <option value="">=== Select ===</option>
           </select>
         </div>
 
         <div class="form-group mb-3">
-          <h5 class="my-3 border-bottom pb-2"><label for="itemSelect">Item</label></h5>
+          <h6 class="my-3 border-bottom pb-2"><label for="itemSelect">Item</label></h6>
           <select id="itemSelect" class="form-control" disabled>
             <option value="">=== Select ===</option>
           </select>

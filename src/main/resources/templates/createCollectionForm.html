@@ -25,9 +25,9 @@
 
 <div layout:fragment="content" id="layoutSidenav_content">
   <main>
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-4 pb-4">
 
-      <h2 class="my-3 border-bottom pb-2">Setting Collections</h2>
+      <h2 class="my-3 pb-2">Setting Collections</h2>
 
       <h5 class="my-3 border-bottom pb-2">Collection</h5>
       <form action="/collection" method="post" onsubmit="alert('Your request has been sent.')">
@@ -103,7 +103,7 @@
               </div>
 
               <div class="mb-3">
-                <label for="headers" class="form-label">Headers</label>
+                <label class="form-label">Headers</label>
                 <div id="header-container">
                   <div class="input-group mb-2">
 
@@ -125,7 +125,6 @@
     </div>
 
     <script>
-
       const editor = CodeMirror(document.getElementById("editor"), {
           mode: {name: "javascript", json: true},
           lineNumbers: true,

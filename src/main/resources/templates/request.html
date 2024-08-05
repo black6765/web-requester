@@ -15,14 +15,13 @@
       }
       .border-right {
           border-right: 1px solid #ccc; /* 경계선 추가 */
-          height: 100vh;
       }
   </style>
 </head>
 
 <div layout:fragment="content" id="layoutSidenav_content">
   <main>
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-4 pb-4">
       <form id="form" th:action="@{/request}" method="post">
 
         <input type="hidden" name="collectionName" th:value="${collectionName}"/>
