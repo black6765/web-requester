@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RequestService {
 
     private final CollectionRepository collectionRepository;
@@ -62,9 +64,9 @@ public class RequestService {
 
         String response = sendRequestAndGetResponse(url, body, httpMethod, httpHeaders, client);
 
-        if (isJsonType(response)) {
-            response = getStringtoPrettyJson(response);
-        }
+
+        response = getStringtoPrettyJson(response);
+
 
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
         model.addAttribute("url", url);
@@ -91,9 +93,16 @@ public class RequestService {
         return isJsonType;
     }
 
-    private String getStringtoPrettyJson(final String response) throws JsonProcessingException {
-        Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<>(){});
-        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
+    private String getStringtoPrettyJson(final String response) {
+        try {
+            Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<>() {});
+            String jsonResponse = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
+            log.info("Json parsing success. response:\n" + jsonResponse);
+            return jsonResponse;
+        } catch (JsonProcessingException e) {
+            log.info("Json parsing failed. return response original string:\n" + response);
+            return response;
+        }
     }
 
     private String sendRequestAndGetResponse(final String url, final String body, final String httpMethod, final HttpHeaders httpHeaders, final WebClient client) {
@@ -134,7 +143,7 @@ public class RequestService {
         } catch (InvalidHttpMethodException e) {
             responseBody = ExceptionMessage.HTTP_METHOD_UNAVAILABLE;
         } catch (Exception e) {
-            responseBody = ExceptionMessage.REQUEST_FAILED_WTIH_EXCEPTION;
+            responseBody = e.getMessage();
         }
 
         return responseBody;
