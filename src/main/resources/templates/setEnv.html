@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org/schema/layout" layout:decorate="~{default}">
+
+<div layout:fragment="content" id="layoutSidenav_content">
+  <main>
+    <div class="container-fluid px-4 pb-4">
+      <form id="form" th:action="@{/env}" method="post">
+
+        <div class="row">
+          <div class="col-6">
+            <h6 class="my-3 border-bottom pb-2">Set Environment</h6>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6 border-right">
+            <div class="input-group mb-3">
+              <input type="text" name="envName" id="envName" class="form-control" placeholder="Enter Environment name" aria-describedby="btnGroupAddon" required th:value="${envName}">
+              <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Create</button>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Variable</label>
+              <div id="variable-container">
+                <div class="input-group mb-2" th:each="variable : ${variables}">
+                  <input type="text" class="form-control-sm" name="variableKey" placeholder="Variable Key" th:value="${variable.key}">
+                  <input type="text" class="form-control-sm" name="variableValue" placeholder="Variable Value" th:value="${variable.value}">
+                  <button class="btn btn-danger" type="button" onclick="removeVariable(this)">Del</button>
+                </div>
+              </div>
+              <button class="btn btn-primary" type="button" onclick="addVariable()">Add</button>
+            </div>
+
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <script>
+
+      function addVariable() {
+          const variableContainer = document.getElementById("variable-container");
+          const inputGroup = document.createElement("div");
+          inputGroup.className = "input-group mb-2";
+          inputGroup.innerHTML = `
+              <input type="text" class="form-control-sm" name="variableKey" placeholder="Variable Key">
+              <input type="text" class="form-control-sm" name="variableValue" placeholder="Variable Value">
+              <button class="btn btn-danger" type="button" onclick="removeVariable(this)">Del</button>
+          `;
+          variableContainer.appendChild(inputGroup);
+      }
+
+      function removeVariable(button) {
+          const inputGroup = button.parentElement;
+          inputGroup.remove();
+      }
+    </script>
+  </main>
+</div>
+</html>

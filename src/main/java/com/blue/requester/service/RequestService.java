@@ -4,6 +4,7 @@ import com.blue.requester.dto.ItemDTO;
 import com.blue.requester.exception.InvalidHttpMethodException;
 import com.blue.requester.message.ExceptionMessage;
 import com.blue.requester.repository.CollectionRepository;
+import com.blue.requester.repository.EnvironmentRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ import java.util.Map;
 public class RequestService {
 
     private final CollectionRepository collectionRepository;
+    private final EnvironmentRepository environmentRepository;
     private final ObjectMapper objectMapper;
 
     public String requestForm(Model model, final String collectionName, final String workspaceName, final String itemName) {
@@ -43,6 +46,9 @@ public class RequestService {
         model.addAttribute("workspaceName", workspaceName);
         model.addAttribute("itemName", itemName);
 
+        List<String> envNames = new ArrayList<>(environmentRepository.getEnvStore().keySet());
+        model.addAttribute("envNames", envNames);
+
         return "request";
     }
 
@@ -50,13 +56,40 @@ public class RequestService {
         return collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().get(itemName);
     }
 
+    public String replaceVariables(String origin, Map<String, String> environmentVariable) {
+        // 원본 문자열을 StringBuilder로 변환
+        StringBuilder result = new StringBuilder(origin);
+
+        // 환경 변수를 순회
+        for (Map.Entry<String, String> entry : environmentVariable.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            // ${key} 형태의 문자열을 ${value}로 변경
+            String placeholder = "${" + key + "}";
+            int index = result.indexOf(placeholder);
+
+            while (index != -1) {
+                // 문자열 교체
+                result.replace(index, index + placeholder.length(), value);
+                // 다음 인덱스 찾기
+                index = result.indexOf(placeholder, index + value.length());
+            }
+        }
+
+        // 최종 결과 반환
+        return result.toString();
+    }
+
     public String request(Model model, final String url, final List<String> headersKeys, final List<String> headersValues, final String body, final String httpMethod,
-                          final String collectionName, final String workspaceName, final String itemName) throws JsonProcessingException {
+                          final String collectionName, final String workspaceName, final String itemName, final List<String> envNames, final String envName) throws JsonProcessingException {
 
         Map<String, String> headers = new HashMap<>();
 
         HttpHeaders httpHeaders = getHttpHeaders(headersKeys, headersValues, headers);
         saveItem(url, body, httpMethod, collectionName, workspaceName, itemName, headers);
+
+//        String replacedUrl = replaceVariables(url, environmentRepository.getEnvStore().get())
 
         WebClient client = WebClient.builder()
                 .baseUrl(url)

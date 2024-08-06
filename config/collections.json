@@ -10,10 +10,10 @@
             "name" : "Item 1",
             "CollectionName" : "Collection 1",
             "workspaceName" : "Workspace 1",
-            "url" : "http://www.google.com",
+            "url" : "789",
             "httpMethod" : "GET",
             "headers" : { },
-            "body" : "",
+            "body" : "{\r\n  \"asd\":123,\r\n  \"sad\":231,\r\n  \"cxczc\" : 3123\r\n}",
             "collectionName" : "Collection 1"
           }
         }

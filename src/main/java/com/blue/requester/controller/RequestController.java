@@ -25,9 +25,12 @@ public class RequestController {
                           @RequestParam("httpMethod") String httpMethod,
                           @RequestParam(value = "collectionName", required = false) String collectionName,
                           @RequestParam(value = "workspaceName", required = false) String workspaceName,
-                          @RequestParam(value = "itemName", required = false) String itemName) throws JsonProcessingException {
+                          @RequestParam(value = "itemName", required = false) String itemName,
+                          @RequestParam(value = "envNames", required = false) List<String> envNames,
+                          @RequestParam(value = "envName", required = false) String envName) throws JsonProcessingException {
 
-        return requestService.request(model, url, headersKeys, headersValues, body, httpMethod, collectionName, workspaceName, itemName);
+        return requestService.request(model, url, headersKeys, headersValues, body,
+                httpMethod, collectionName, workspaceName, itemName, envNames, envName);
     }
 
     @GetMapping("/request/{collection}/{workspace}/{item}")

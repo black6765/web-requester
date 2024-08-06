@@ -1,7 +1,6 @@
 package com.blue.requester.repository;
 
 import com.blue.requester.dto.CollectionDTO;
-import com.blue.requester.dto.ItemDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
