@@ -9,6 +9,9 @@
           <div class="col-6">
             <h6 class="my-3 border-bottom pb-2">Select environment name</h6>
           </div>
+          <div class="col-6">
+            <h6 class="my-3 border-bottom pb-2">Select activated environment</h6>
+          </div>
         </div>
 
         <div class="row">
@@ -17,11 +20,23 @@
               <div class="mb-3">
                 <select name="envName" id="envName" class="form-control" required>
                   <option value="NEW_ENVIRONMENT">(New)</option>
+                  <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}" th:if="${env} != ${selectedEnvName}"></option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Config</button>
+
+            </form>
+          </div>
+
+          <div class="col-6">
+            <form id="activateForm" th:action="@{/env/activation}" method="post">
+              <div class="mb-3">
+                <select name="activateEnvName" id="activateEnvName" class="form-control" required>
+                  <option value="None">(None)</option>
                   <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}"></option>
                 </select>
               </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
-
+              <button type="submit" class="btn btn-primary">Activate</button>
             </form>
           </div>
         </div>

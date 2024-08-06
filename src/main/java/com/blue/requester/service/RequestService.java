@@ -19,8 +19,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,9 +45,6 @@ public class RequestService {
         model.addAttribute("collectionName", collectionName);
         model.addAttribute("workspaceName", workspaceName);
         model.addAttribute("itemName", itemName);
-
-        List<String> envNames = new ArrayList<>(environmentRepository.getEnvStore().keySet());
-        model.addAttribute("envNames", envNames);
 
         return "request";
     }
@@ -82,20 +79,23 @@ public class RequestService {
     }
 
     public String request(Model model, final String url, final List<String> headersKeys, final List<String> headersValues, final String body, final String httpMethod,
-                          final String collectionName, final String workspaceName, final String itemName, final List<String> envNames, final String envName) throws JsonProcessingException {
+                          final String collectionName, final String workspaceName, final String itemName) throws JsonProcessingException {
 
-        Map<String, String> headers = new HashMap<>();
+        Map<String, String> headers = new LinkedHashMap<>();
 
         HttpHeaders httpHeaders = getHttpHeaders(headersKeys, headersValues, headers);
         saveItem(url, body, httpMethod, collectionName, workspaceName, itemName, headers);
 
-//        String replacedUrl = replaceVariables(url, environmentRepository.getEnvStore().get())
+        String replacedUrl = url;
 
-        WebClient client = WebClient.builder()
-                .baseUrl(url)
-                .build();
+        String currentEnvName = environmentRepository.getCurrentEnvName();
+        if (currentEnvName != null && !"None".equals(currentEnvName)) {
+            replacedUrl = replaceVariables(url, environmentRepository.getCurrentEnvVariables());
+        }
+        
+        // Todo : header value에서 ${randomNumber}에 대해 랜덤 난수 발생시키는 기능 추가
 
-        String response = sendRequestAndGetResponse(url, body, httpMethod, httpHeaders, client);
+        String response = sendRequestAndGetResponse(replacedUrl, body, httpMethod, httpHeaders);
 
 
         response = getStringtoPrettyJson(response);
@@ -138,25 +138,28 @@ public class RequestService {
         }
     }
 
-    private String sendRequestAndGetResponse(final String url, final String body, final String httpMethod, final HttpHeaders httpHeaders, final WebClient client) {
+    private String sendRequestAndGetResponse(final String replacedUrl, final String body, final String httpMethod, final HttpHeaders httpHeaders) {
+        WebClient client = WebClient.builder()
+                .build();
+
         String responseBody = "{}";
 
         try {
             responseBody = switch (httpMethod) {
                 case "GET" -> client.get()
-                        .uri(url)
+                        .uri(replacedUrl)
                         .headers(h -> h.addAll(httpHeaders))
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
                 case "DELETE" -> client.delete()
-                        .uri(url)
+                        .uri(replacedUrl)
                         .headers(h -> h.addAll(httpHeaders))
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
                 case "POST" -> client.post()
-                        .uri(url)
+                        .uri(replacedUrl)
                         .headers(h -> h.addAll(httpHeaders))
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(body))
@@ -164,7 +167,7 @@ public class RequestService {
                         .bodyToMono(String.class)
                         .block();
                 case "PUT" -> client.put()
-                        .uri(url)
+                        .uri(replacedUrl)
                         .headers(h -> h.addAll(httpHeaders))
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(body))

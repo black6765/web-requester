@@ -9,8 +9,6 @@
         <input type="hidden" name="collectionName" th:value="${collectionName}"/>
         <input type="hidden" name="workspaceName" th:value="${workspaceName}"/>
         <input type="hidden" name="itemName" th:value="${itemName}"/>
-        <input type="hidden" name="envNames" th:value="${envNames}"/>
-        <input type="hidden" name="envName" th:value="${envName}"/>
 
         <div class="row">
           <div class="col-6">
@@ -23,11 +21,6 @@
 
         <div class="row">
           <div class="col-6 border-right">
-
-            <select class="form-select-sm" name="envName" required>
-              <option value="" disabled selected>Select Environment</option>
-              <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}"></option>
-            </select>
 
             <div class="input-group mb-3">
               <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">

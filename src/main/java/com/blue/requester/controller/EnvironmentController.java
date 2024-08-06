@@ -19,9 +19,8 @@ public class EnvironmentController {
 
     @GetMapping("/env/selectForm")
     public String selectEnv(Model model) {
-        List<String> envNames = new ArrayList<>(environmentRepository.getEnvStore().keySet());
 
-        model.addAttribute("envNames", envNames);
+        model.addAttribute("envNames", environmentRepository.getEnvNames());
 
         return "selectEnv";
     }
@@ -38,6 +37,15 @@ public class EnvironmentController {
         model.addAttribute("variables", variables);
 
         return "setEnv";
+    }
+
+    @PostMapping("/env/activation")
+    public String activateEnv(Model model, @RequestParam("activateEnvName") String activateEnvName) {
+
+        environmentRepository.setCurrentEnvName(activateEnvName);
+        model.addAttribute("envNames", environmentRepository.getEnvNames());
+
+        return "selectEnv";
     }
 
     @PostMapping("/env")
