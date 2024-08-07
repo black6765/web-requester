@@ -53,27 +53,21 @@ public class RequestService {
     }
 
     public String replaceVariables(final String origin, Map<String, String> environmentVariable) {
-        // 원본 문자열을 StringBuilder로 변환
         StringBuilder result = new StringBuilder(origin);
 
-        // 환경 변수를 순회
         for (Map.Entry<String, String> entry : environmentVariable.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            // ${key} 형태의 문자열을 ${value}로 변경
             String placeholder = "${" + key + "}";
             int index = result.indexOf(placeholder);
 
             while (index != -1) {
-                // 문자열 교체
                 result.replace(index, index + placeholder.length(), value);
-                // 다음 인덱스 찾기
                 index = result.indexOf(placeholder, index + value.length());
             }
         }
 
-        // 최종 결과 반환
         return result.toString();
     }
 
@@ -96,8 +90,6 @@ public class RequestService {
         if (!environmentRepository.getGlobalVariables().isEmpty()) {
             replacedUrl = replaceVariables(url, environmentRepository.getGlobalVariables());
         }
-        
-        // Todo : header value에서 ${randomNumber}에 대해 랜덤 난수 발생시키는 기능 추가
 
         String response = sendRequestAndGetResponse(replacedUrl, body, httpMethod, httpHeaders);
 
@@ -207,9 +199,9 @@ public class RequestService {
             for (int i = 0; i < headersKeys.size(); i++) {
                 if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) {
                     headers.put(headersKeys.get(i), headersValues.get(i));
-                    // Hidden function: header value "${#RANDOM_NUMBER}" replaced 100000 ~ 999999(6 digits number)
+                    // Hidden function: header value "${#NUM}" replaced 100000 ~ 999999(6 digits number)
                     httpHeaders.add(headersKeys.get(i),
-                            headersValues.get(i).replace("${#RANDOM_NUMBER}", String.valueOf((int) (Math.random() * 899999) + 100000)));
+                            headersValues.get(i).replace("${#NUM}", String.valueOf((int) (Math.random() * 899999) + 100000)));
                 }
             }
         }
