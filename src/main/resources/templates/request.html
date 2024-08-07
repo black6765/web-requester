@@ -63,6 +63,13 @@
     </div>
 
     <script>
+      document.addEventListener('keydown', function(event) {
+          if (event.ctrlKey && event.key === 'Enter') {
+              event.preventDefault(); // 기본 동작 방지
+              document.getElementById('form').submit(); // 폼 제출
+          }
+      });
+
       const editor = CodeMirror(document.getElementById("editor"), {
           mode: {name: "javascript", json: true},
           lineNumbers: true,
