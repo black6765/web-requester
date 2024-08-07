@@ -78,7 +78,6 @@ public class CollectionService {
     }
 
     public String deleteCollection(final String collectionName, final String workspaceName, final String itemName) {
-        // 선택된 데이터 처리
         Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
 
         if (ObjectUtils.isEmpty(workspaceName)) {

@@ -50,7 +50,7 @@
         <div class="row">
           <div class="col-6 border-right">
             <form id="delete" th:action="@{/env}" method="post">
-              <input type="hidden" name="_method" value="delete"/> <!-- 추가된 부분 -->
+              <input type="hidden" name="_method" value="delete"/>
               <div class="mb-3">
                 <select name="deleteEnvName" id="deleteEnvName" class="form-control" required>
                   <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}" th:if="${env} != ${exceptEnvName}"></option>

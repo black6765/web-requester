@@ -92,12 +92,7 @@ public class RequestService {
         }
 
         String response = sendRequestAndGetResponse(replacedUrl, body, httpMethod, httpHeaders);
-
-        Map<String, String> replacedHeaders = new LinkedHashMap<>();
-
-
         response = getStringtoPrettyJson(response);
-
 
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
         model.addAttribute("url", url);
