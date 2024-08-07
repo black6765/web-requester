@@ -1,7 +1,9 @@
 package com.blue.requester.event;
 
 import com.blue.requester.dto.CollectionDTO;
+import com.blue.requester.repository.EnvironmentRepository;
 import com.blue.requester.service.CollectionService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +23,16 @@ import java.util.Map;
 public class StartEvent implements ApplicationListener<ContextRefreshedEvent> {
 
     private final CollectionService collectionService;
+    private final EnvironmentRepository environmentRepository;
     private final ObjectMapper objectMapper;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        getCollectionsWhenStart();
+        getEnvsWhenStart();
+    }
+
+    private void getCollectionsWhenStart() {
         try {
             String collectionsFilePath = "config/collections.json";
             BufferedReader br = new BufferedReader(new FileReader(collectionsFilePath));
@@ -38,9 +46,33 @@ public class StartEvent implements ApplicationListener<ContextRefreshedEvent> {
             log.info("Load collections in {} success.\n"
                     + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(store)
                     + "\n================= End of Collections Info =================", System.getProperty("user.dir") + collectionsFilePath);
-            
+
         } catch (FileNotFoundException e) {
             log.info("Collections file not found");
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    private void getEnvsWhenStart() {
+        try {
+            String envsFilePath = "config/environments.json";
+            BufferedReader br = new BufferedReader(new FileReader(envsFilePath));
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) sb.append(line);
+
+            String envsFile = sb.toString();
+            Map<String, Map<String, String>> store = objectMapper.readValue(envsFile, new TypeReference<>(){});
+            environmentRepository.newStore(store);
+
+            log.info("Load environments in {} success.\n"
+                    + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(store)
+                    + "\n================= End of Environments Info =================", System.getProperty("user.dir") + envsFilePath);
+
+        } catch (FileNotFoundException e) {
+            log.info("Environments file not found");
         } catch (IOException e) {
             throw new RuntimeException();
         }

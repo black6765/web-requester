@@ -20,7 +20,7 @@
               <div class="mb-3">
                 <select name="envName" id="envName" class="form-control" required>
                   <option value="NEW_ENVIRONMENT">(New)</option>
-                  <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}" th:if="${env} != ${selectedEnvName}"></option>
+                  <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}"></option>
                 </select>
               </div>
               <button type="submit" class="btn btn-primary">Config</button>
@@ -33,10 +33,30 @@
               <div class="mb-3">
                 <select name="activateEnvName" id="activateEnvName" class="form-control" required>
                   <option value="None">(None)</option>
-                  <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}"></option>
+                  <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}" th:if="${env} != ${exceptEnvName}"></option>
                 </select>
               </div>
               <button type="submit" class="btn btn-primary">Activate</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <h6 class="my-3 border-bottom pb-2">Delete environment name</h6>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6 border-right">
+            <form id="delete" th:action="@{/env}" method="post">
+              <input type="hidden" name="_method" value="delete"/> <!-- 추가된 부분 -->
+              <div class="mb-3">
+                <select name="deleteEnvName" id="deleteEnvName" class="form-control" required>
+                  <option th:each="env : ${envNames}" th:value="${env}" th:text="${env}" th:if="${env} != ${exceptEnvName}"></option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-danger">Delete</button>
             </form>
           </div>
         </div>

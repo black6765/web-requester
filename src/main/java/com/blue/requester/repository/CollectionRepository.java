@@ -9,7 +9,7 @@ import java.util.Map;
 @Component
 public class CollectionRepository {
 
-    Map<String, CollectionDTO> collectionsStore = new LinkedHashMap<>();
+    private Map<String, CollectionDTO> collectionsStore = new LinkedHashMap<>();
 
     public void newStore(Map<String, CollectionDTO> collections) {
         this.collectionsStore = collections;

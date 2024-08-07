@@ -19,7 +19,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class RequestService {
         return collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().get(itemName);
     }
 
-    public String replaceVariables(String origin, Map<String, String> environmentVariable) {
+    public String replaceVariables(final String origin, Map<String, String> environmentVariable) {
         // 원본 문자열을 StringBuilder로 변환
         StringBuilder result = new StringBuilder(origin);
 
@@ -89,13 +88,20 @@ public class RequestService {
         String replacedUrl = url;
 
         String currentEnvName = environmentRepository.getCurrentEnvName();
+
         if (currentEnvName != null && !"None".equals(currentEnvName)) {
             replacedUrl = replaceVariables(url, environmentRepository.getCurrentEnvVariables());
+        }
+
+        if (!environmentRepository.getGlobalVariables().isEmpty()) {
+            replacedUrl = replaceVariables(url, environmentRepository.getGlobalVariables());
         }
         
         // Todo : header value에서 ${randomNumber}에 대해 랜덤 난수 발생시키는 기능 추가
 
         String response = sendRequestAndGetResponse(replacedUrl, body, httpMethod, httpHeaders);
+
+        Map<String, String> replacedHeaders = new LinkedHashMap<>();
 
 
         response = getStringtoPrettyJson(response);
@@ -201,7 +207,9 @@ public class RequestService {
             for (int i = 0; i < headersKeys.size(); i++) {
                 if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) {
                     headers.put(headersKeys.get(i), headersValues.get(i));
-                    httpHeaders.add(headersKeys.get(i), headersValues.get(i));
+                    // Hidden function: header value "${#RANDOM_NUMBER}" replaced 100000 ~ 999999(6 digits number)
+                    httpHeaders.add(headersKeys.get(i),
+                            headersValues.get(i).replace("${#RANDOM_NUMBER}", String.valueOf((int) (Math.random() * 899999) + 100000)));
                 }
             }
         }

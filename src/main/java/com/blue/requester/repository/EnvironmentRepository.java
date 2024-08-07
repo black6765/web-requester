@@ -14,13 +14,24 @@ public class EnvironmentRepository {
 
     public EnvironmentRepository() {
         currentEnvName = "None";
+        envStore.put(GLOBAL_ENV_NAME, new LinkedHashMap<>());
     }
 
-    private final Map<String, Map<String, String>> envStore = new LinkedHashMap<>();
+    private Map<String, Map<String, String>> envStore = new LinkedHashMap<>();
+
+    public static final String GLOBAL_ENV_NAME = "GLOBAL_ENVIRONMENT";
+
+    public Map<String, String> getGlobalVariables() {
+        return envStore.get(GLOBAL_ENV_NAME);
+    }
 
     @Getter
     @Setter
     private String currentEnvName;
+
+    public void newStore(Map<String, Map<String, String>> environments) {
+        this.envStore = environments;
+    }
 
     public void save(String envName, Map<String, String> env) {
         envStore.put(envName, env);
