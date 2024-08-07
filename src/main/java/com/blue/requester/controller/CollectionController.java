@@ -1,16 +1,13 @@
 package com.blue.requester.controller;
 
-import com.blue.requester.dto.CollectionDTO;
 import com.blue.requester.repository.CollectionRepository;
 import com.blue.requester.service.CollectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @Controller

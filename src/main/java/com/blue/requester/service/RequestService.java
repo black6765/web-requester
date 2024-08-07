@@ -76,11 +76,10 @@ public class RequestService {
 
         Map<String, String> headers = new LinkedHashMap<>();
 
-        HttpHeaders httpHeaders = getHttpHeaders(headersKeys, headersValues, headers);
+        HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(headersKeys, headersValues, headers);
         saveItem(url, body, httpMethod, collectionName, workspaceName, itemName, headers);
 
         String replacedUrl = url;
-
         String currentEnvName = environmentRepository.getCurrentEnvName();
 
         if (currentEnvName != null && !"None".equals(currentEnvName)) {
@@ -121,7 +120,8 @@ public class RequestService {
 
     private String getStringtoPrettyJson(final String response) {
         try {
-            Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<>() {});
+            Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<>() {
+            });
             String jsonResponse = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
             log.info("Json parsing success. response:\n" + jsonResponse);
             return jsonResponse;
@@ -187,7 +187,7 @@ public class RequestService {
         itemDTO.setBody(body);
     }
 
-    private HttpHeaders getHttpHeaders(final List<String> headersKeys, final List<String> headersValues, final Map<String, String> headers) {
+    private HttpHeaders getHttpHeadersByHeadersMap(final List<String> headersKeys, final List<String> headersValues, final Map<String, String> headers) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {

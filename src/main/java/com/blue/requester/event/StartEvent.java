@@ -64,7 +64,9 @@ public class StartEvent implements ApplicationListener<ContextRefreshedEvent> {
             while ((line = br.readLine()) != null) sb.append(line);
 
             String envsFile = sb.toString();
-            Map<String, Map<String, String>> store = objectMapper.readValue(envsFile, new TypeReference<>(){});
+            Map<String, Map<String, String>> store = objectMapper.readValue(envsFile, new TypeReference<>() {
+            });
+
             environmentRepository.newStore(store);
 
             log.info("Load environments in {} success.\n"

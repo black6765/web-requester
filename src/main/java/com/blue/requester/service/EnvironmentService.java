@@ -4,7 +4,6 @@ import com.blue.requester.repository.CollectionRepository;
 import com.blue.requester.repository.EnvironmentRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.server.Cookie;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;

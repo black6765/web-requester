@@ -34,7 +34,8 @@ public class CollectionService {
     }
 
     public Map<String, CollectionDTO> convertJsonToCollectionsMapAndNewStore(final String json) throws IOException {
-        Map<String, CollectionDTO> store = objectMapper.readValue(json, new TypeReference<>(){});
+        Map<String, CollectionDTO> store = objectMapper.readValue(json, new TypeReference<>() {
+        });
         collectionRepository.newStore(store);
         return store;
     }
