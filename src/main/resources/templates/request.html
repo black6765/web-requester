@@ -32,12 +32,18 @@
                             </select>
                             <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL"
                                    aria-describedby="btnGroupAddon" required th:value="${url}">
-                            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enter</button>
+                            <button class="btn btn-outline-dark" type="submit" id="button-addon2">Enter</button>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Headers</label>
-                            <div id="header-container">
+                            <br>
+                            <button id="toggleButton" class="btn btn-outline-secondary btn-sm mb-3" type="button"
+                                    onclick="toggleHeaders()">
+                                Show
+                            </button>
+                            <br>
+                            <div id="header-container" style="display: none;">
                                 <div class="input-group mb-2" th:each="header : ${headers}">
                                     <input type="text" class="form-control-sm" name="headersKey"
                                            placeholder="Header Key" th:value="${header.key}">
@@ -47,7 +53,9 @@
                                     </button>
                                 </div>
                             </div>
-                            <button class="btn btn-primary" type="button" onclick="addHeader()">Add</button>
+                            <button id="addButton" class="btn btn-primary" type="button" style="display: none;"
+                                    onclick="addHeader()">Add
+                            </button>
                         </div>
 
                         <div class="mb-3">
@@ -82,6 +90,38 @@
         </div>
 
         <script>
+        function toggleHeaders() {
+            const headerContainer = document.getElementById('header-container');
+            const toggleButton = document.getElementById('toggleButton');
+            const addButton = document.getElementById('addButton'); // Add 버튼을 가져옴
+
+            if (headerContainer.style.display === 'none' || headerContainer.style.display === '') {
+                headerContainer.style.display = 'block';
+                toggleButton.textContent = 'Hide'; // 헤더가 보일 때 버튼 텍스트 변경
+                addButton.style.display = 'inline-block'; // Add 버튼 보이게 설정
+            } else {
+                headerContainer.style.display = 'none';
+                toggleButton.textContent = 'Show'; // 헤더가 숨길 때 버튼 텍스트 변경
+                addButton.style.display = 'none'; // Add 버튼 숨기기
+            }
+        }
+
+      function addHeader() {
+          const headerContainer = document.getElementById("header-container");
+          const inputGroup = document.createElement("div");
+          inputGroup.className = "input-group mb-2";
+          inputGroup.innerHTML = `
+              <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key">
+              <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value">
+              <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
+          `;
+          headerContainer.appendChild(inputGroup);
+
+        headerContainer.style.display = 'block';
+        const toggleButton = document.getElementById('toggleButton');
+        toggleButton.textContent = 'Hide';
+      }
+
       document.addEventListener('keydown', function(event) {
           if (event.ctrlKey && event.key === 'Enter') {
               event.preventDefault();
@@ -130,22 +170,46 @@
           document.getElementById('body').value = jsonValue;
       };
 
-      function addHeader() {
-          const headerContainer = document.getElementById("header-container");
-          const inputGroup = document.createElement("div");
-          inputGroup.className = "input-group mb-2";
-          inputGroup.innerHTML = `
-              <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key">
-              <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value">
-              <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
-          `;
-          headerContainer.appendChild(inputGroup);
-      }
-
       function removeHeader(button) {
           const inputGroup = button.parentElement;
           inputGroup.remove();
       }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
