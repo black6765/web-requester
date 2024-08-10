@@ -78,6 +78,54 @@ public class CollectionService {
         return "redirect:/collection/createForm";
     }
 
+    public String renameCollection(final String collectionName, final String workspaceName, final String itemName, final String targetName) {
+        Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
+
+        if (ObjectUtils.isEmpty(workspaceName)) {
+            CollectionDTO collection = store.get(collectionName);
+
+            Map<String, WorkspaceDTO> workspaces = store.get(collectionName).getWorkspaces();
+
+
+            for (WorkspaceDTO workspace : workspaces.values()) {
+
+                Map<String, ItemDTO> items = workspace.getItems();
+
+                for (ItemDTO item : items.values()) {
+                    item.setCollectionName(targetName);
+                }
+
+                workspace.setCollectionName(targetName);
+            }
+
+            collection.setName(targetName);
+            store.put(targetName, collection);
+            store.remove(collectionName);
+            log.info("Collection [{}] renamed to [{}]", collectionName, targetName);
+        } else if (ObjectUtils.isEmpty(itemName)) {
+            WorkspaceDTO workspace = store.get(collectionName).getWorkspaces().get(workspaceName);
+
+            Map<String, ItemDTO> items = workspace.getItems();
+
+            for (ItemDTO item : items.values()) {
+                item.setWorkspaceName(targetName);
+            }
+
+            workspace.setName(targetName);
+            store.get(collectionName).getWorkspaces().put(targetName, workspace);
+            store.get(collectionName).getWorkspaces().remove(workspaceName);
+            log.info("Workspace [{}] <in [{}] Collection> renamed to [{}]", workspaceName, collectionName, targetName);
+        } else {
+            ItemDTO item = store.get(collectionName).getWorkspaces().get(workspaceName).getItems().get(itemName);
+            store.get(collectionName).getWorkspaces().get(workspaceName).getItems().put(targetName, item);
+            store.get(collectionName).getWorkspaces().get(workspaceName).getItems().remove(itemName);
+            item.setName(targetName);
+            log.info("Item [{}] <in [{}] Workspace in [{}] Collection> renamed to [{}]", itemName, workspaceName, collectionName, targetName);
+        }
+
+        return "renameCollectionForm";
+    }
+
     public String deleteCollection(final String collectionName, final String workspaceName, final String itemName) {
         Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
 

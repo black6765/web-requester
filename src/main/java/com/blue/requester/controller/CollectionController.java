@@ -54,6 +54,25 @@ public class CollectionController {
         return "deleteCollectionForm";
     }
 
+    @GetMapping("/collection/renameForm")
+    public String renameCollection(Model model) {
+        model.addAttribute("collections", collectionRepository.getCollectionsStore());
+        return "renameCollectionForm";
+    }
+
+    @PutMapping("/collection/rename")
+    public String renameCollection(
+            @RequestParam("collectionSelect") String collection,
+            @RequestParam(value = "workspaceSelect", required = false) String workspace,
+            @RequestParam(value = "itemSelect", required = false) String item,
+            @RequestParam(value = "name") String name) {
+
+        log.info("OK");
+
+        return collectionService.renameCollection(collection, workspace, item, name);
+    }
+
+
     @DeleteMapping("/collection")
     public String deleteCollection(
             @RequestParam("collectionSelect") String collection,

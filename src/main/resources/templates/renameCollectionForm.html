@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:layout="http://www.thymeleaf.org/schema/layout" layout:decorate="~{default}">
+
+<div layout:fragment="content" id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4 pb-4">
+
+            <h2 class="my-3 pb-2">Rename Collections</h2>
+
+            <form id="selectionForm" onsubmit="alert('Your request has been sent.')">
+                <div class="form-group mb-3">
+                    <h6 class="my-3 border-bottom pb-2"><label for="collectionSelect">Collection</label></h6>
+                    <select id="collectionSelect" class="form-control" required>
+                        <option value="">=== Select ===</option>
+
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <h6 class="my-3 border-bottom pb-2"><label for="workspaceSelect">Workspace</label></h6>
+                    <select id="workspaceSelect" class="form-control" disabled>
+                        <option value="">=== Select ===</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <h6 class="my-3 border-bottom pb-2"><label for="itemSelect">Item</label></h6>
+                    <select id="itemSelect" class="form-control" disabled>
+                        <option value="">=== Select ===</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <input type="text" name="name" id="name" class="form-control" placeholder="Enter name"
+                           aria-describedby="btnGroupAddon">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Rename</button>
+
+            </form>
+        </div>
+
+        <script>
+      $(document).ready(function() {
+          $.get('/collectionNameList', function(collections) {
+              collections.forEach(collectionName => {
+                  $('#collectionSelect').append(`<option value="${collectionName}">${collectionName}</option>`);
+              });
+          });
+
+          $('#collectionSelect').on('change', function() {
+              const collectionKey = $(this).val();
+              const workspaceSelect = $('#workspaceSelect');
+              workspaceSelect.empty().append('<option value="">=== Select ===</option>').prop('disabled', true);
+              $('#itemSelect').empty().append('<option value="">=== Select ===</option>').prop('disabled', true);
+
+              if (collectionKey) {
+                  $.get(`/workspaceNameList?collectionName=${collectionKey}`, function(workspaces) {
+                      workspaces.forEach(workspaceName => {
+                          workspaceSelect.append(`<option value="${workspaceName}">${workspaceName}</option>`);
+                      });
+                      workspaceSelect.prop('disabled', false);
+                  })
+                  .fail(function() {
+                      console.error('Failed get workspaceNameList.');
+                  });
+              }
+          });
+
+          $('#workspaceSelect').on('change', function() {
+              const collectionKey = $('#collectionSelect').val();
+              const workspaceKey = $(this).val();
+              const itemSelect = $('#itemSelect');
+              itemSelect.empty().append('<option value="">=== Select ===</option>').prop('disabled', true);
+
+              if (workspaceKey) {
+                  $.get(`/itemNameList?collectionName=${collectionKey}&workspaceName=${workspaceKey}`, function(items) {
+                      items.forEach(itemName => {
+                          itemSelect.append(`<option value="${itemName}">${itemName}</option>`);
+                      });
+                      itemSelect.prop('disabled', false);
+                  })
+                  .fail(function() {
+                      console.error('Failed get itemNameList.');
+                  });
+              }
+          });
+
+          $('#selectionForm').on('submit', function(e) {
+              e.preventDefault();
+
+              const collection = $('#collectionSelect').val();
+              const workspace = $('#workspaceSelect').val();
+              const item = $('#itemSelect').val();
+              const name = $('#name').val();
+
+              $.ajax({
+                  url: '/collection/rename',
+                  type: 'PUT',
+                  data: {
+                      collectionSelect: collection,
+                      workspaceSelect: workspace,
+                      itemSelect: item,
+                      name: name
+                  },
+                  success: function(response) {
+                      console.log('response:', response);
+                      location.reload();
+                  },
+                  error: function(xhr, status, error) {
+                      console.error('request failed:', error);
+                      location.reload();
+                  }
+              });
+          });
+      });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </script>
+
+    </main>
+</div>
+</html>

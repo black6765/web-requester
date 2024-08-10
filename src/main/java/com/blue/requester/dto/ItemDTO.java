@@ -12,8 +12,11 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDTO {
+    @Setter
     public String name;
+    @Setter
     public String CollectionName;
+    @Setter
     public String workspaceName;
     public String url;
     public String httpMethod;
