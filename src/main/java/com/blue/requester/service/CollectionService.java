@@ -14,10 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +60,7 @@ public class CollectionService {
 
     public String createItem(final String collectionName, final String workspaceName, final String itemName,
                              final String url, final String httpMethod, final String body,
-                             final List<String> headersKeys, List<String> headersValues, final String contentType, final List<String> selectedHeaders) {
+                             final List<String> headersKeys, List<String> headersValues, final String contentType, final Set<String> selectedHeaders) {
         Map<String, String> headers = new TreeMap<>();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {

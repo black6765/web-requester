@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class CollectionController {
             @RequestParam("body") String body,
             @RequestParam(value = "headersKey", required = false) List<String> headersKeys,
             @RequestParam(value = "headersValue", required = false) List<String> headersValues,
-            @RequestParam("selectedHeaders") List<String> selectedHeaders) {
+            @RequestParam("selectedHeaders") Set<String> selectedHeaders) {
         return collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues, contentType, selectedHeaders);
     }
 

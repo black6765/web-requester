@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class RequestController {
                           @RequestParam(value = "collectionName", required = false) String collectionName,
                           @RequestParam(value = "workspaceName", required = false) String workspaceName,
                           @RequestParam(value = "itemName", required = false) String itemName,
-                          @RequestParam(value = "selectedHeaders", required = false) List<String> selectedHeaders) throws JsonProcessingException {
+                          @RequestParam(value = "selectedHeaders", required = false) Set<String> selectedHeaders) throws JsonProcessingException {
 
         return requestService.request(model, url, headersKeys, headersValues, body, httpMethod, collectionName, workspaceName, itemName, contentType, selectedHeaders);
     }

@@ -157,7 +157,6 @@
             return selectedKeys.join(", ");
         }
 
-        // 폼 제출 전 체크된 헤더 키를 숨겨진 입력 필드에 설정
         document.getElementById("itemForm").addEventListener("submit", function(event) {
             const selectedHeaders = getSelectedHeaders();
             const hiddenInput = document.createElement("input");
@@ -221,11 +220,6 @@
               })
               .catch(error => console.error('Error fetching workspace names:', error));
       }
-
-
-
-
-
 
         </script>
     </main>

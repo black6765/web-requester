@@ -21,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 @Service
@@ -74,12 +75,12 @@ public class RequestService {
     }
 
     public String request(Model model, final String url, final List<String> headersKeys, final List<String> headersValues, final String body, final String httpMethod,
-                          final String collectionName, final String workspaceName, final String itemName, final String contentType, final List<String> selectedHeaders) throws JsonProcessingException {
+                          final String collectionName, final String workspaceName, final String itemName, final String contentType, final Set<String> selectedHeaders) throws JsonProcessingException {
 
         Map<String, String> headers = new TreeMap<>();
 
         HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(headersKeys, headersValues, headers, selectedHeaders);
-        saveItem(url, body, httpMethod, contentType, collectionName, workspaceName, itemName, headers);
+        saveItem(url, body, httpMethod, contentType, collectionName, workspaceName, itemName, headers, selectedHeaders);
 
         String replacedUrl = url;
         String currentEnvName = environmentRepository.getCurrentEnvName();
@@ -190,16 +191,17 @@ public class RequestService {
     }
 
     private void saveItem(final String url, final String body, final String httpMethod, final String contentType,
-                          final String collectionName, final String workspaceName, final String itemName, final Map<String, String> headers) {
+                          final String collectionName, final String workspaceName, final String itemName, final Map<String, String> headers, final Set<String> selectedHeaders) {
         ItemDTO itemDTO = getItem(collectionName, workspaceName, itemName);
         itemDTO.setUrl(url);
         itemDTO.setHttpMethod(httpMethod);
         itemDTO.setContentType(contentType);
         itemDTO.setHeaders(headers);
         itemDTO.setBody(body);
+        itemDTO.setSelectedHeaders(selectedHeaders);
     }
 
-    private HttpHeaders getHttpHeadersByHeadersMap(final List<String> headersKeys, final List<String> headersValues, final Map<String, String> headers, final List<String> selectedHeaders) {
+    private HttpHeaders getHttpHeadersByHeadersMap(final List<String> headersKeys, final List<String> headersValues, final Map<String, String> headers, final Set<String> selectedHeaders) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
