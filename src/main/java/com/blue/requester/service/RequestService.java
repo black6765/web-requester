@@ -40,6 +40,7 @@ public class RequestService {
         model.addAttribute("headers", itemDTO.getHeaders());
         model.addAttribute("body", itemDTO.getBody());
         model.addAttribute("httpMethod", itemDTO.getHttpMethod());
+        model.addAttribute("contentType", itemDTO.getContentType());
 
         model.addAttribute("collectionName", collectionName);
         model.addAttribute("workspaceName", workspaceName);
@@ -72,12 +73,12 @@ public class RequestService {
     }
 
     public String request(Model model, final String url, final List<String> headersKeys, final List<String> headersValues, final String body, final String httpMethod,
-                          final String collectionName, final String workspaceName, final String itemName) throws JsonProcessingException {
+                          final String collectionName, final String workspaceName, final String itemName, final String contentType) throws JsonProcessingException {
 
         Map<String, String> headers = new LinkedHashMap<>();
 
         HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(headersKeys, headersValues, headers);
-        saveItem(url, body, httpMethod, collectionName, workspaceName, itemName, headers);
+        saveItem(url, body, httpMethod, contentType, collectionName, workspaceName, itemName, headers);
 
         String replacedUrl = url;
         String currentEnvName = environmentRepository.getCurrentEnvName();
@@ -90,13 +91,14 @@ public class RequestService {
             replacedUrl = replaceVariables(url, environmentRepository.getGlobalVariables());
         }
 
-        String response = sendRequestAndGetResponse(replacedUrl, body, httpMethod, httpHeaders);
+        String response = sendRequestAndGetResponse(replacedUrl, body, httpMethod, httpHeaders, contentType);
         response = getStringtoPrettyJson(response);
 
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
         model.addAttribute("url", url);
         model.addAttribute("httpMethod", httpMethod);
         model.addAttribute("headers", headers);
+        model.addAttribute("contentType", contentType);
         model.addAttribute("body", body);
         model.addAttribute("response", response);
 
@@ -131,9 +133,16 @@ public class RequestService {
         }
     }
 
-    private String sendRequestAndGetResponse(final String replacedUrl, final String body, final String httpMethod, final HttpHeaders httpHeaders) {
+    private String sendRequestAndGetResponse(final String replacedUrl, final String body, final String httpMethod, final HttpHeaders httpHeaders, final String contentType) {
         WebClient client = WebClient.builder()
                 .build();
+
+        MediaType selectedContentType = switch (contentType.toLowerCase()) {
+            case "json" -> MediaType.APPLICATION_JSON;
+            case "text" -> MediaType.TEXT_PLAIN;
+            case "form-urlencoded" -> MediaType.APPLICATION_FORM_URLENCODED;
+            default -> MediaType.TEXT_PLAIN;
+        };
 
         String responseBody = "{}";
 
@@ -154,7 +163,7 @@ public class RequestService {
                 case "POST" -> client.post()
                         .uri(replacedUrl)
                         .headers(h -> h.addAll(httpHeaders))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(selectedContentType)
                         .body(BodyInserters.fromValue(body))
                         .retrieve()
                         .bodyToMono(String.class)
@@ -162,7 +171,7 @@ public class RequestService {
                 case "PUT" -> client.put()
                         .uri(replacedUrl)
                         .headers(h -> h.addAll(httpHeaders))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(selectedContentType)
                         .body(BodyInserters.fromValue(body))
                         .retrieve()
                         .bodyToMono(String.class)
@@ -178,11 +187,12 @@ public class RequestService {
         return responseBody;
     }
 
-    private void saveItem(final String url, final String body, final String httpMethod,
+    private void saveItem(final String url, final String body, final String httpMethod, final String contentType,
                           final String collectionName, final String workspaceName, final String itemName, final Map<String, String> headers) {
         ItemDTO itemDTO = getItem(collectionName, workspaceName, itemName);
         itemDTO.setUrl(url);
         itemDTO.setHttpMethod(httpMethod);
+        itemDTO.setContentType(contentType);
         itemDTO.setHeaders(headers);
         itemDTO.setBody(body);
     }

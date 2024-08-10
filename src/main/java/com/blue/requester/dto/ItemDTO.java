@@ -17,6 +17,7 @@ public class ItemDTO {
     public String workspaceName;
     public String url;
     public String httpMethod;
+    public String contentType;
     public Map<String, String> headers;
     public String body;
 }

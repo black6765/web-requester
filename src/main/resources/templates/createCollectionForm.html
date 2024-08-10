@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org/schema/layout" layout:decorate="~{default}">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org/schema/layout"
+      layout:decorate="~{default}">
 
 <head>
-  <style>
+    <style>
       .CodeMirror {
           border: 1px solid #ccc;
           font-size: 11px;
@@ -11,119 +12,140 @@
           border-right: 1px solid #ccc;
           height: 100vh;
       }
-  </style>
+
+
+
+
+    </style>
 </head>
 
 <div layout:fragment="content" id="layoutSidenav_content">
-  <main>
-    <div class="container-fluid px-4 pb-4">
+    <main>
+        <div class="container-fluid px-4 pb-4">
 
-      <div class="row">
-        <div class="col-6">
-          <h6 class="my-3 border-bottom pb-2">Setting Collections</h6>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-6 border-right">
-          <h5 class="my-3 pb-2">Collection</h5>
-          <form action="/collection" method="post" onsubmit="alert('Your request has been sent.')">
-            <div class="mb-3">
-              <label for="collectionName" class="form-label">Name:</label>
-              <input type="text" id="collectionName" name="collectionName" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Create</button>
-          </form>
-
-          <hr/>
-
-          <h5 class="my-3 pb-2">Workspace</h5>
-          <form action="/workspace" method="post" onsubmit="alert('Your request has been sent.')">
-            <div class="mb-3">
-              <label for="collectionListA" class="form-label">Collection:</label>
-              <select id="collectionListA" name="collectionName" class="form-select" required>
-                <option>=== Select ====</option>
-                <th:block th:each="collection : ${collectionNameList}">
-                  <option th:value="${collection}" th:text="${collection}"></option>
-                </th:block>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="workspaceName" class="form-label">Name:</label>
-              <input type="text" id="workspaceName" name="workspaceName" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Create</button>
-          </form>
-
-          <hr/>
-
-          <h5 class="my-3 pb-2">Item</h5>
-          <form id="itemForm" action="/item" method="post" onsubmit="alert('Your request has been sent.')">
-            <div class="mb-3">
-              <label for="collectionListB" class="form-label">Collection:</label>
-              <select id="collectionListB" name="collectionName" class="form-select" required onchange="updateWorkspaceNameList()">
-                <option>=== Select ===</option>
-                <th:block th:each="collection : ${collectionNameList}">
-                  <option th:value="${collection}" th:text="${collection}"></option>
-                </th:block>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="workspaceNameList" class="form-label">Workspace:</label>
-              <select id="workspaceNameList" name="workspaceName" class="form-select" required>
-                <option>=== Select ===</option>
-                <th:block th:each="workspaceName : ${workspaceNameList}">
-                  <option th:value="${workspaceName}" th:text="${workspaceName}"></option>
-                </th:block>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="itemName" class="form-label">Name:</label>
-              <input type="text" id="itemName" name="itemName" class="form-control" required>
-            </div>
-
-            <div class="container-fluid px-4 mb-3">
-              <div class="row">
-                <div class="col-12 border">
-                  <h6 class="my-3 border-bottom pb-2">URL</h6>
-                  <div class="input-group mb-3">
-                    <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
-                      <option value="GET">GET</option>
-                      <option value="POST">POST</option>
-                      <option value="PUT">PUT</option>
-                      <option value="DELETE">DELETE</option>
-                    </select>
-                    <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" required>
-                  </div>
-
-                  <div class="mb-3">
-                    <label class="form-label">Headers</label>
-                    <div id="header-container">
-                      <div class="input-group mb-2">
-
-                      </div>
-                    </div>
-                    <button class="btn btn-primary" type="button" onclick="addHeader()">Add</button>
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="body" class="form-label">Body</label>
-                    <textarea id="body" name="body" style="display:none;"></textarea>
-                    <div id="editor"></div>
-                  </div>
+            <div class="row">
+                <div class="col-6">
+                    <h6 class="my-3 border-bottom pb-2">Setting Collections</h6>
                 </div>
-              </div>
             </div>
-            <button type="submit" class="btn btn-primary mb-3">Create</button>
-          </form>
-        </div>
-      </div>
-    </div>
 
-    <script>
+            <div class="row">
+                <div class="col-6 border-right">
+                    <h5 class="my-3 pb-2">Collection</h5>
+                    <form action="/collection" method="post" onsubmit="alert('Your request has been sent.')">
+                        <div class="mb-3">
+                            <label for="collectionName" class="form-label">Name:</label>
+                            <input type="text" id="collectionName" name="collectionName" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </form>
+
+                    <hr/>
+
+                    <h5 class="my-3 pb-2">Workspace</h5>
+                    <form action="/workspace" method="post" onsubmit="alert('Your request has been sent.')">
+                        <div class="mb-3">
+                            <label for="collectionListA" class="form-label">Collection:</label>
+                            <select id="collectionListA" name="collectionName" class="form-select" required>
+                                <option>=== Select ====</option>
+                                <th:block th:each="collection : ${collectionNameList}">
+                                    <option th:value="${collection}" th:text="${collection}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="workspaceName" class="form-label">Name:</label>
+                            <input type="text" id="workspaceName" name="workspaceName" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </form>
+
+                    <hr/>
+
+                    <h5 class="my-3 pb-2">Item</h5>
+                    <form id="itemForm" action="/item" method="post" onsubmit="alert('Your request has been sent.')">
+                        <div class="mb-3">
+                            <label for="collectionListB" class="form-label">Collection:</label>
+                            <select id="collectionListB" name="collectionName" class="form-select" required
+                                    onchange="updateWorkspaceNameList()">
+                                <option>=== Select ===</option>
+                                <th:block th:each="collection : ${collectionNameList}">
+                                    <option th:value="${collection}" th:text="${collection}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="workspaceNameList" class="form-label">Workspace:</label>
+                            <select id="workspaceNameList" name="workspaceName" class="form-select" required>
+                                <option>=== Select ===</option>
+                                <th:block th:each="workspaceName : ${workspaceNameList}">
+                                    <option th:value="${workspaceName}" th:text="${workspaceName}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="itemName" class="form-label">Name:</label>
+                            <input type="text" id="itemName" name="itemName" class="form-control" required>
+                        </div>
+
+                        <div class="container-fluid px-4 mb-3">
+                            <div class="row">
+                                <div class="col-12 border">
+                                    <h6 class="my-3 border-bottom pb-2">URL</h6>
+                                    <div class="input-group mb-3">
+                                        <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
+                                            <option value="GET">GET</option>
+                                            <option value="POST">POST</option>
+                                            <option value="PUT">PUT</option>
+                                            <option value="DELETE">DELETE</option>
+                                        </select>
+                                        <input type="text" name="url" id="url" class="form-control"
+                                               placeholder="Enter URL" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Headers</label>
+                                        <div id="header-container">
+                                            <div class="input-group mb-2">
+
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" type="button" onclick="addHeader()">Add</button>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Content-Type</label>
+                                        <br>
+                                        <input type="radio" id="json" name="contentType" value="json"
+                                               th:checked="${contentType == 'json'}">
+                                        <label for="json">Json</label>
+                                        <input type="radio" id="text" name="contentType" value="text"
+                                               th:checked="${contentType == 'text'}">
+                                        <label for="text">Text</label>
+                                        <input type="radio" id="formUrlEncoded" name="contentType"
+                                               value="form-urlencoded"
+                                               th:checked="${contentType == 'form-urlencoded'}">
+                                        <label for="formUrlEncoded">form-urlencoded</label>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="body" class="form-label">Body</label>
+                                        <textarea id="body" name="body" style="display:none;"></textarea>
+                                        <div id="editor"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-3">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
       const editor = CodeMirror(document.getElementById("editor"), {
           mode: {name: "javascript", json: true},
           lineNumbers: true,
@@ -176,7 +198,11 @@
               })
               .catch(error => console.error('Error fetching workspace names:', error));
       }
-    </script>
-  </main>
+
+
+
+
+        </script>
+    </main>
 </div>
 </html>

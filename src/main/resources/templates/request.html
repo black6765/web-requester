@@ -1,68 +1,87 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org/schema/layout" layout:decorate="~{default}">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org/schema/layout"
+      layout:decorate="~{default}">
 
 <div layout:fragment="content" id="layoutSidenav_content">
-  <main>
-    <div class="container-fluid px-4 pb-4">
-      <form id="form" th:action="@{/request}" method="post">
+    <main>
+        <div class="container-fluid px-4 pb-4">
+            <form id="form" th:action="@{/request}" method="post">
 
-        <input type="hidden" name="collectionName" th:value="${collectionName}"/>
-        <input type="hidden" name="workspaceName" th:value="${workspaceName}"/>
-        <input type="hidden" name="itemName" th:value="${itemName}"/>
+                <input type="hidden" name="collectionName" th:value="${collectionName}"/>
+                <input type="hidden" name="workspaceName" th:value="${workspaceName}"/>
+                <input type="hidden" name="itemName" th:value="${itemName}"/>
 
-        <div class="row">
-          <div class="col-6">
-            <h6 class="my-3 border-bottom pb-2">URL</h6>
-          </div>
-          <div class="col-6">
-            <h6 class="my-3 border-bottom pb-2">Response</h6>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-6 border-right">
-
-            <div class="input-group mb-3">
-              <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
-                <option value="GET" th:selected="${httpMethod == 'GET'}">GET</option>
-                <option value="POST" th:selected="${httpMethod == 'POST'}">POST</option>
-                <option value="PUT" th:selected="${httpMethod == 'PUT'}">PUT</option>
-                <option value="DELETE" th:selected="${httpMethod == 'DELETE'}">DELETE</option>
-              </select>
-              <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL" aria-describedby="btnGroupAddon" required th:value="${url}">
-              <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enter</button>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Headers</label>
-              <div id="header-container">
-                <div class="input-group mb-2" th:each="header : ${headers}">
-                  <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key" th:value="${header.key}">
-                  <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value" th:value="${header.value}">
-                  <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
+                <div class="row">
+                    <div class="col-6">
+                        <h6 class="my-3 border-bottom pb-2">Request</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="my-3 border-bottom pb-2">Response</h6>
+                    </div>
                 </div>
-              </div>
-              <button class="btn btn-primary" type="button" onclick="addHeader()">Add</button>
-            </div>
 
-            <div class="mb-3">
-              <label for="body" class="form-label">Body</label>
-              <textarea id="body" name="body" style="display:none;" th:text="${body}"></textarea>
-              <div id="editor"></div>
-            </div>
-          </div>
+                <div class="row">
+                    <div class="col-6 border-right">
 
-          <div class="col-6">
-            <div class="mb-3">
-              <div id="responseEditor"></div>
-              <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
-            </div>
-          </div>
+                        <div class="input-group mb-3">
+                            <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
+                                <option value="GET" th:selected="${httpMethod == 'GET'}">GET</option>
+                                <option value="POST" th:selected="${httpMethod == 'POST'}">POST</option>
+                                <option value="PUT" th:selected="${httpMethod == 'PUT'}">PUT</option>
+                                <option value="DELETE" th:selected="${httpMethod == 'DELETE'}">DELETE</option>
+                            </select>
+                            <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL"
+                                   aria-describedby="btnGroupAddon" required th:value="${url}">
+                            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enter</button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Headers</label>
+                            <div id="header-container">
+                                <div class="input-group mb-2" th:each="header : ${headers}">
+                                    <input type="text" class="form-control-sm" name="headersKey"
+                                           placeholder="Header Key" th:value="${header.key}">
+                                    <input type="text" class="form-control-sm" name="headersValue"
+                                           placeholder="Header Value" th:value="${header.value}">
+                                    <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" type="button" onclick="addHeader()">Add</button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Content-Type</label>
+                            <br>
+                            <input type="radio" id="json" name="contentType" value="json"
+                                   th:checked="${contentType == 'json'}">
+                            <label for="json">Json</label>
+                            <input type="radio" id="text" name="contentType" value="text"
+                                   th:checked="${contentType == 'text'}">
+                            <label for="text">Text</label>
+                            <input type="radio" id="formUrlEncoded" name="contentType" value="form-urlencoded"
+                                   th:checked="${contentType == 'form-urlencoded'}">
+                            <label for="formUrlEncoded">form-urlencoded</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="body" class="form-label">Body</label>
+                            <textarea id="body" name="body" style="display:none;" th:text="${body}"></textarea>
+                            <div id="editor"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <div id="responseEditor"></div>
+                            <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-      </form>
-    </div>
 
-    <script>
+        <script>
       document.addEventListener('keydown', function(event) {
           if (event.ctrlKey && event.key === 'Enter') {
               event.preventDefault();
@@ -103,7 +122,7 @@
           responseEditor.setValue(initialResponse);
 
           editor.setSize("100%", "300px");
-          responseEditor.setSize("100%", "550px");
+          responseEditor.setSize("100%", "600px");
       };
 
       document.getElementById('form').onsubmit = function() {
@@ -127,7 +146,17 @@
           const inputGroup = button.parentElement;
           inputGroup.remove();
       }
-    </script>
-  </main>
+
+
+
+
+
+
+
+
+
+
+        </script>
+    </main>
 </div>
 </html>

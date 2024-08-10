@@ -40,11 +40,12 @@ public class CollectionController {
             @RequestParam("itemName") String itemName,
             @RequestParam("url") String url,
             @RequestParam("httpMethod") String httpMethod,
+            @RequestParam("contentType") String contentType,
             @RequestParam("body") String body,
             @RequestParam(value = "headersKey", required = false) List<String> headersKeys,
             @RequestParam(value = "headersValue", required = false) List<String> headersValues
     ) {
-        return collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues);
+        return collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues, contentType);
     }
 
     @GetMapping("/collection/deleteForm")

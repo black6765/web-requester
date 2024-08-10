@@ -25,11 +25,12 @@ public class RequestController {
                           @RequestParam(value = "headersValue", required = false) List<String> headersValues,
                           @RequestParam("body") String body,
                           @RequestParam("httpMethod") String httpMethod,
+                          @RequestParam("contentType") String contentType,
                           @RequestParam(value = "collectionName", required = false) String collectionName,
                           @RequestParam(value = "workspaceName", required = false) String workspaceName,
                           @RequestParam(value = "itemName", required = false) String itemName) throws JsonProcessingException {
 
-        return requestService.request(model, url, headersKeys, headersValues, body, httpMethod, collectionName, workspaceName, itemName);
+        return requestService.request(model, url, headersKeys, headersValues, body, httpMethod, collectionName, workspaceName, itemName, contentType);
     }
 
     @GetMapping("/request/{collection}/{workspace}/{item}")
