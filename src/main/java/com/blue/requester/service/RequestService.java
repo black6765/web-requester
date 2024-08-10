@@ -60,7 +60,7 @@ public class RequestService {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            String placeholder = "${" + key + "}";
+            String placeholder = "{{" + key + "}}";
             int index = result.indexOf(placeholder);
 
             while (index != -1) {
@@ -206,7 +206,7 @@ public class RequestService {
                     headers.put(headersKeys.get(i), headersValues.get(i));
                     // Hidden function: header value "${#NUM}" replaced 100000 ~ 999999(6 digits number)
                     httpHeaders.add(headersKeys.get(i),
-                            headersValues.get(i).replace("${#NUM}", String.valueOf((int) (Math.random() * 899999) + 100000)));
+                            headersValues.get(i).replace("{{#NUM}}", String.valueOf((int) (Math.random() * 899999) + 100000)));
                 }
             }
         }
