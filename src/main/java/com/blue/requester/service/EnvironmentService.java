@@ -9,9 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 @AllArgsConstructor
@@ -84,7 +84,7 @@ public class EnvironmentService {
     }
 
     private Map<String, String> convertTwoListToMap(List<String> variableKeys, List<String> variableValues) {
-        Map<String, String> variables = new LinkedHashMap<>();
+        Map<String, String> variables = new TreeMap<>();
 
         if (variableKeys != null && variableValues != null && !variableKeys.isEmpty() && !variableValues.isEmpty()) {
             for (int i = 0; i < variableKeys.size(); i++) {

@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Component
 @RequiredArgsConstructor
@@ -64,8 +65,9 @@ public class StartEvent implements ApplicationListener<ContextRefreshedEvent> {
             while ((line = br.readLine()) != null) sb.append(line);
 
             String envsFile = sb.toString();
-            Map<String, Map<String, String>> store = objectMapper.readValue(envsFile, new TypeReference<>() {
-            });
+            TypeReference<TreeMap<String, Map<String, String>>> typeReference = new TypeReference<>() {
+            };
+            Map<String, Map<String, String>> store = objectMapper.readValue(envsFile, typeReference);
 
             environmentRepository.newStore(store);
 

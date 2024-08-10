@@ -15,9 +15,9 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +34,10 @@ public class CollectionService {
     }
 
     public Map<String, CollectionDTO> convertJsonToCollectionsMapAndNewStore(final String json) throws IOException {
-        Map<String, CollectionDTO> store = objectMapper.readValue(json, new TypeReference<>() {
-        });
+        TypeReference<TreeMap<String, CollectionDTO>> typeReference = new TypeReference<>() {
+        };
+        Map<String, CollectionDTO> store = objectMapper.readValue(json, typeReference);
+        store.putAll(store);
         collectionRepository.newStore(store);
         return store;
     }
@@ -50,17 +52,17 @@ public class CollectionService {
     }
 
     public String createCollection(String collectionName) {
-        collectionRepository.save(collectionName, new CollectionDTO(collectionName, new LinkedHashMap<>()));
+        collectionRepository.save(collectionName, new CollectionDTO(collectionName, new TreeMap<>()));
         return "redirect:/collection/createForm";
     }
 
     public String createWorkspace(final String collectionName, final String workspaceName) {
-        collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().put(workspaceName, new WorkspaceDTO(workspaceName, collectionName, new LinkedHashMap<>()));
+        collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().put(workspaceName, new WorkspaceDTO(workspaceName, collectionName, new TreeMap<>()));
         return "redirect:/collection/createForm";
     }
 
     public String createItem(final String collectionName, final String workspaceName, final String itemName, final String url, final String httpMethod, final String body, final List<String> headersKeys, List<String> headersValues, final String contentType) {
-        Map<String, String> headers = new LinkedHashMap<>();
+        Map<String, String> headers = new TreeMap<>();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
             for (int i = 0; i < headersKeys.size(); i++) {
@@ -130,12 +132,12 @@ public class CollectionService {
         Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
 
         if (ObjectUtils.isEmpty(workspaceName)) {
-            CollectionDTO copiedCollection = new CollectionDTO(targetName, new LinkedHashMap<>());
+            CollectionDTO copiedCollection = new CollectionDTO(targetName, new TreeMap<>());
 
             Map<String, WorkspaceDTO> workspaces = store.get(collectionName).getWorkspaces();
 
             for (WorkspaceDTO workspace : workspaces.values()) {
-                WorkspaceDTO copiedWorkspace = new WorkspaceDTO(workspace.getName(), targetName, new LinkedHashMap<>());
+                WorkspaceDTO copiedWorkspace = new WorkspaceDTO(workspace.getName(), targetName, new TreeMap<>());
                 copiedCollection.getWorkspaces().put(workspace.getName(), copiedWorkspace);
 
                 Map<String, ItemDTO> items = workspace.getItems();
@@ -151,7 +153,7 @@ public class CollectionService {
             log.info("Collection [{}] copy to [{}]", collectionName, targetName);
         } else if (ObjectUtils.isEmpty(itemName)) {
             WorkspaceDTO workspace = store.get(collectionName).getWorkspaces().get(workspaceName);
-            WorkspaceDTO copiedWorkspace = new WorkspaceDTO(targetName, collectionName, new LinkedHashMap<>());
+            WorkspaceDTO copiedWorkspace = new WorkspaceDTO(targetName, collectionName, new TreeMap<>());
 
             Map<String, ItemDTO> items = workspace.getItems();
 

@@ -19,9 +19,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +75,7 @@ public class RequestService {
     public String request(Model model, final String url, final List<String> headersKeys, final List<String> headersValues, final String body, final String httpMethod,
                           final String collectionName, final String workspaceName, final String itemName, final String contentType) throws JsonProcessingException {
 
-        Map<String, String> headers = new LinkedHashMap<>();
+        Map<String, String> headers = new TreeMap<>();
 
         HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(headersKeys, headersValues, headers);
         saveItem(url, body, httpMethod, contentType, collectionName, workspaceName, itemName, headers);
