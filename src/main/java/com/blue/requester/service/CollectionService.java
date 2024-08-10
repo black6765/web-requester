@@ -126,6 +126,54 @@ public class CollectionService {
         return "renameCollectionForm";
     }
 
+    public String copyCollection(final String collectionName, final String workspaceName, final String itemName, final String targetName) {
+        Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
+
+        if (ObjectUtils.isEmpty(workspaceName)) {
+            CollectionDTO copiedCollection = new CollectionDTO(targetName, new LinkedHashMap<>());
+
+            Map<String, WorkspaceDTO> workspaces = store.get(collectionName).getWorkspaces();
+
+            for (WorkspaceDTO workspace : workspaces.values()) {
+                WorkspaceDTO copiedWorkspace = new WorkspaceDTO(workspace.getName(), targetName, new LinkedHashMap<>());
+                copiedCollection.getWorkspaces().put(workspace.getName(), copiedWorkspace);
+
+                Map<String, ItemDTO> items = workspace.getItems();
+
+                for (ItemDTO item : items.values()) {
+                    ItemDTO copiedItem = new ItemDTO(item);
+                    copiedItem.setCollectionName(targetName);
+                    copiedWorkspace.getItems().put(copiedItem.getName(), copiedItem);
+                }
+            }
+
+            store.put(targetName, copiedCollection);
+            log.info("Collection [{}] copy to [{}]", collectionName, targetName);
+        } else if (ObjectUtils.isEmpty(itemName)) {
+            WorkspaceDTO workspace = store.get(collectionName).getWorkspaces().get(workspaceName);
+            WorkspaceDTO copiedWorkspace = new WorkspaceDTO(targetName, collectionName, new LinkedHashMap<>());
+
+            Map<String, ItemDTO> items = workspace.getItems();
+
+            for (ItemDTO item : items.values()) {
+                ItemDTO copiedItem = new ItemDTO(item);
+                copiedItem.setWorkspaceName(targetName);
+                copiedWorkspace.getItems().put(copiedItem.getName(), copiedItem);
+            }
+
+            store.get(collectionName).getWorkspaces().put(targetName, copiedWorkspace);
+            log.info("Workspace [{}] <in [{}] Collection> copy to [{}]", workspaceName, collectionName, targetName);
+        } else {
+            ItemDTO item = store.get(collectionName).getWorkspaces().get(workspaceName).getItems().get(itemName);
+            ItemDTO copiedItem = new ItemDTO(item);
+            copiedItem.setName(targetName);
+            store.get(collectionName).getWorkspaces().get(workspaceName).getItems().put(targetName, copiedItem);
+            log.info("Item [{}] <in [{}] Workspace in [{}] Collection> copy to [{}]", itemName, workspaceName, collectionName, targetName);
+        }
+
+        return "copyCollectionForm";
+    }
+
     public String deleteCollection(final String collectionName, final String workspaceName, final String itemName) {
         Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
 

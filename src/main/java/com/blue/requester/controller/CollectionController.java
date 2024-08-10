@@ -54,6 +54,15 @@ public class CollectionController {
         return "deleteCollectionForm";
     }
 
+    @DeleteMapping("/collection")
+    public String deleteCollection(
+            @RequestParam("collectionSelect") String collection,
+            @RequestParam(value = "workspaceSelect", required = false) String workspace,
+            @RequestParam(value = "itemSelect", required = false) String item) {
+
+        return collectionService.deleteCollection(collection, workspace, item);
+    }
+
     @GetMapping("/collection/renameForm")
     public String renameCollection(Model model) {
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
@@ -66,20 +75,22 @@ public class CollectionController {
             @RequestParam(value = "workspaceSelect", required = false) String workspace,
             @RequestParam(value = "itemSelect", required = false) String item,
             @RequestParam(value = "name") String name) {
-
-        log.info("OK");
-
         return collectionService.renameCollection(collection, workspace, item, name);
     }
 
+    @GetMapping("/collection/copyForm")
+    public String copyCollection(Model model) {
+        model.addAttribute("collections", collectionRepository.getCollectionsStore());
+        return "copyCollectionForm";
+    }
 
-    @DeleteMapping("/collection")
-    public String deleteCollection(
+    @PutMapping("/collection/copy")
+    public String copyCollection(
             @RequestParam("collectionSelect") String collection,
             @RequestParam(value = "workspaceSelect", required = false) String workspace,
-            @RequestParam(value = "itemSelect", required = false) String item) {
-
-        return collectionService.deleteCollection(collection, workspace, item);
+            @RequestParam(value = "itemSelect", required = false) String item,
+            @RequestParam(value = "name") String name) {
+        return collectionService.copyCollection(collection, workspace, item, name);
     }
 
     @GetMapping("/collectionNameList")

@@ -1,9 +1,7 @@
 package com.blue.requester.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.util.Map;
 
@@ -11,11 +9,25 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Accessors(chain = true)
 public class ItemDTO {
+
+    public ItemDTO(ItemDTO itemDTO) {
+        this.name = itemDTO.getName();
+        this.collectionName = itemDTO.getCollectionName();
+        this.workspaceName = itemDTO.getWorkspaceName();
+        this.url = itemDTO.getUrl();
+        this.httpMethod = itemDTO.getHttpMethod();
+        this.contentType = itemDTO.getContentType();
+        this.headers = itemDTO.getHeaders();
+        this.body = itemDTO.getBody();
+    }
+
     @Setter
     public String name;
     @Setter
-    public String CollectionName;
+    public String collectionName;
     @Setter
     public String workspaceName;
     public String url;
