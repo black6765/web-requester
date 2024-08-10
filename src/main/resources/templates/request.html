@@ -44,9 +44,9 @@
                             </button>
                             <br>
                             <div id="header-container" style="display: none;">
-                                <div class="input-group mb-2" th:each="header, iterStat : ${headers}">
+                                <div class="input-group mb-2" th:each="header : ${headers}">
                                     <input type="checkbox" class="form-check-input" value="${header.key}"
-                                           th:checked="${selectedHeaders != null and selectedHeaders.contains(header.key)}"
+                                           th:checked="${selectedHeaders != null && selectedHeaders.contains(header.key)}"
                                            style="margin-right: 10px;">
                                     <input type="text" class="form-control-sm" name="headersKey"
                                            placeholder="Header Key" th:value="${header.key}">
