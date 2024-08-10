@@ -28,9 +28,10 @@ public class RequestController {
                           @RequestParam("contentType") String contentType,
                           @RequestParam(value = "collectionName", required = false) String collectionName,
                           @RequestParam(value = "workspaceName", required = false) String workspaceName,
-                          @RequestParam(value = "itemName", required = false) String itemName) throws JsonProcessingException {
+                          @RequestParam(value = "itemName", required = false) String itemName,
+                          @RequestParam(value = "selectedHeaders", required = false) List<String> selectedHeaders) throws JsonProcessingException {
 
-        return requestService.request(model, url, headersKeys, headersValues, body, httpMethod, collectionName, workspaceName, itemName, contentType);
+        return requestService.request(model, url, headersKeys, headersValues, body, httpMethod, collectionName, workspaceName, itemName, contentType, selectedHeaders);
     }
 
     @GetMapping("/request/{collection}/{workspace}/{item}")

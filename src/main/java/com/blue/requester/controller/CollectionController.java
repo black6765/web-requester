@@ -43,9 +43,9 @@ public class CollectionController {
             @RequestParam("contentType") String contentType,
             @RequestParam("body") String body,
             @RequestParam(value = "headersKey", required = false) List<String> headersKeys,
-            @RequestParam(value = "headersValue", required = false) List<String> headersValues
-    ) {
-        return collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues, contentType);
+            @RequestParam(value = "headersValue", required = false) List<String> headersValues,
+            @RequestParam("selectedHeaders") List<String> selectedHeaders) {
+        return collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues, contentType, selectedHeaders);
     }
 
     @GetMapping("/collection/deleteForm")

@@ -61,7 +61,9 @@ public class CollectionService {
         return "redirect:/collection/createForm";
     }
 
-    public String createItem(final String collectionName, final String workspaceName, final String itemName, final String url, final String httpMethod, final String body, final List<String> headersKeys, List<String> headersValues, final String contentType) {
+    public String createItem(final String collectionName, final String workspaceName, final String itemName,
+                             final String url, final String httpMethod, final String body,
+                             final List<String> headersKeys, List<String> headersValues, final String contentType, final List<String> selectedHeaders) {
         Map<String, String> headers = new TreeMap<>();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
@@ -72,9 +74,7 @@ public class CollectionService {
             }
         }
 
-        System.out.println(itemName);
-
-        ItemDTO itemDTO = new ItemDTO(itemName, collectionName, workspaceName, url, httpMethod, contentType, headers, body);
+        ItemDTO itemDTO = new ItemDTO(itemName, collectionName, workspaceName, url, httpMethod, contentType, headers, body, selectedHeaders);
         collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().put(itemName, itemDTO);
 
         return "redirect:/collection/createForm";

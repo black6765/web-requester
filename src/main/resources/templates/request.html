@@ -44,7 +44,10 @@
                             </button>
                             <br>
                             <div id="header-container" style="display: none;">
-                                <div class="input-group mb-2" th:each="header : ${headers}">
+                                <div class="input-group mb-2" th:each="header, iterStat : ${headers}">
+                                    <input type="checkbox" class="form-check-input" value="${header.key}"
+                                           th:checked="${selectedHeaders != null and #lists.contains(selectedHeaders, header.key)}"
+                                           style="margin-right: 10px;">
                                     <input type="text" class="form-control-sm" name="headersKey"
                                            placeholder="Header Key" th:value="${header.key}">
                                     <input type="text" class="form-control-sm" name="headersValue"
@@ -90,19 +93,43 @@
         </div>
 
         <script>
+        function getSelectedHeaders() {
+            const selectedKeys = [];
+            const checkboxes = document.querySelectorAll("#header-container input[type='checkbox']");
+            const headerInputs = document.querySelectorAll("#header-container input[name='headersKey']");
+
+            checkboxes.forEach((checkbox, index) => {
+                if (checkbox.checked) {
+                    selectedKeys.push(headerInputs[index].value);
+                }
+            });
+
+            return selectedKeys.join(", ");
+        }
+
+        // 폼 제출 전 체크된 헤더 키를 숨겨진 입력 필드에 설정
+        document.getElementById("form").addEventListener("submit", function(event) {
+            const selectedHeaders = getSelectedHeaders();
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "selectedHeaders";
+            hiddenInput.value = selectedHeaders;
+            this.appendChild(hiddenInput);
+        });
+
         function toggleHeaders() {
             const headerContainer = document.getElementById('header-container');
             const toggleButton = document.getElementById('toggleButton');
-            const addButton = document.getElementById('addButton'); // Add 버튼을 가져옴
+            const addButton = document.getElementById('addButton');
 
             if (headerContainer.style.display === 'none' || headerContainer.style.display === '') {
                 headerContainer.style.display = 'block';
-                toggleButton.textContent = 'Hide'; // 헤더가 보일 때 버튼 텍스트 변경
-                addButton.style.display = 'inline-block'; // Add 버튼 보이게 설정
+                toggleButton.textContent = 'Hide';
+                addButton.style.display = 'inline-block';
             } else {
                 headerContainer.style.display = 'none';
-                toggleButton.textContent = 'Show'; // 헤더가 숨길 때 버튼 텍스트 변경
-                addButton.style.display = 'none'; // Add 버튼 숨기기
+                toggleButton.textContent = 'Show';
+                addButton.style.display = 'none';
             }
         }
 
@@ -111,9 +138,10 @@
           const inputGroup = document.createElement("div");
           inputGroup.className = "input-group mb-2";
           inputGroup.innerHTML = `
-              <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key">
-              <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value">
-              <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
+                                    <input type="checkbox" class="form-check-input" value="\${header.key}" style="margin-right: 10px;">
+                                    <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key">
+                                    <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value">
+                                    <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
           `;
           headerContainer.appendChild(inputGroup);
 
@@ -174,51 +202,6 @@
           const inputGroup = button.parentElement;
           inputGroup.remove();
       }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         </script>
     </main>

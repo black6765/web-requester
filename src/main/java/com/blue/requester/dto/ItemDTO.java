@@ -3,6 +3,7 @@ package com.blue.requester.dto;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -22,6 +23,7 @@ public class ItemDTO {
         this.contentType = itemDTO.getContentType();
         this.headers = itemDTO.getHeaders();
         this.body = itemDTO.getBody();
+        this.selectedHeaders = itemDTO.getSelectedHeaders();
     }
 
     @Setter
@@ -35,4 +37,5 @@ public class ItemDTO {
     public String contentType;
     public Map<String, String> headers;
     public String body;
+    public List<String> selectedHeaders;
 }

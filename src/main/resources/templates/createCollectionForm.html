@@ -12,12 +12,6 @@
           border-right: 1px solid #ccc;
           height: 100vh;
       }
-
-
-
-
-
-
     </style>
 </head>
 
@@ -148,6 +142,32 @@
         </div>
 
         <script>
+
+        function getSelectedHeaders() {
+            const selectedKeys = [];
+            const checkboxes = document.querySelectorAll("#header-container input[type='checkbox']");
+            const headerInputs = document.querySelectorAll("#header-container input[name='headersKey']");
+
+            checkboxes.forEach((checkbox, index) => {
+                if (checkbox.checked) {
+                    selectedKeys.push(headerInputs[index].value);
+                }
+            });
+
+            return selectedKeys.join(", ");
+        }
+
+        // 폼 제출 전 체크된 헤더 키를 숨겨진 입력 필드에 설정
+        document.getElementById("itemForm").addEventListener("submit", function(event) {
+            const selectedHeaders = getSelectedHeaders();
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "selectedHeaders";
+            hiddenInput.value = selectedHeaders;
+            this.appendChild(hiddenInput);
+        });
+
+
       const editor = CodeMirror(document.getElementById("editor"), {
           mode: {name: "javascript", json: true},
           lineNumbers: true,
@@ -169,9 +189,10 @@
           const inputGroup = document.createElement("div");
           inputGroup.className = "input-group mb-2";
           inputGroup.innerHTML = `
-              <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key">
-              <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value">
-              <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
+                <input type="checkbox" class="form-check-input" value="\${header.key}" style="margin-right: 10px;">
+                <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key">
+                <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value">
+                <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
           `;
           headerContainer.appendChild(inputGroup);
       }

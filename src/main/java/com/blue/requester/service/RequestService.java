@@ -41,6 +41,7 @@ public class RequestService {
         model.addAttribute("body", itemDTO.getBody());
         model.addAttribute("httpMethod", itemDTO.getHttpMethod());
         model.addAttribute("contentType", itemDTO.getContentType());
+        model.addAttribute("selectedHeaders", itemDTO.selectedHeaders);
 
         model.addAttribute("collectionName", collectionName);
         model.addAttribute("workspaceName", workspaceName);
@@ -73,11 +74,11 @@ public class RequestService {
     }
 
     public String request(Model model, final String url, final List<String> headersKeys, final List<String> headersValues, final String body, final String httpMethod,
-                          final String collectionName, final String workspaceName, final String itemName, final String contentType) throws JsonProcessingException {
+                          final String collectionName, final String workspaceName, final String itemName, final String contentType, final List<String> selectedHeaders) throws JsonProcessingException {
 
         Map<String, String> headers = new TreeMap<>();
 
-        HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(headersKeys, headersValues, headers);
+        HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(headersKeys, headersValues, headers, selectedHeaders);
         saveItem(url, body, httpMethod, contentType, collectionName, workspaceName, itemName, headers);
 
         String replacedUrl = url;
@@ -100,6 +101,7 @@ public class RequestService {
         model.addAttribute("headers", headers);
         model.addAttribute("contentType", contentType);
         model.addAttribute("body", body);
+        model.addAttribute("selectedHeaders", selectedHeaders);
         model.addAttribute("response", response);
 
         model.addAttribute("collectionName", collectionName);
@@ -197,16 +199,18 @@ public class RequestService {
         itemDTO.setBody(body);
     }
 
-    private HttpHeaders getHttpHeadersByHeadersMap(final List<String> headersKeys, final List<String> headersValues, final Map<String, String> headers) {
+    private HttpHeaders getHttpHeadersByHeadersMap(final List<String> headersKeys, final List<String> headersValues, final Map<String, String> headers, final List<String> selectedHeaders) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
             for (int i = 0; i < headersKeys.size(); i++) {
                 if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) {
+
                     headers.put(headersKeys.get(i), headersValues.get(i));
-                    // Hidden function: header value "${#NUM}" replaced 100000 ~ 999999(6 digits number)
-                    httpHeaders.add(headersKeys.get(i),
-                            headersValues.get(i).replace("{{#NUM}}", String.valueOf((int) (Math.random() * 899999) + 100000)));
+                    if (selectedHeaders != null && selectedHeaders.contains(headersKeys.get(i))) {
+                        // Hidden function: header value "{{#NUM}}" replaced 100000 ~ 999999(6 digits number)
+                        httpHeaders.add(headersKeys.get(i), headersValues.get(i).replace("{{#NUM}}", String.valueOf((int) (Math.random() * 899999) + 100000)));
+                    }
                 }
             }
         }
