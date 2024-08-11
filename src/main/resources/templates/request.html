@@ -149,12 +149,15 @@
         toggleButton.textContent = 'Hide';
       }
 
-      document.addEventListener('keydown', function(event) {
-          if (event.ctrlKey && event.key === 'Enter') {
-              event.preventDefault();
-              document.getElementById('form').submit();
-          }
-      });
+        document.addEventListener('keydown', function(event) {
+            // Ctrl 키가 눌리고 Enter 키가 눌렸는지 확인
+            if (event.ctrlKey && event.key === 'Enter') {
+                event.preventDefault(); // 기본 Enter 키 동작 방지
+
+                // 버튼 클릭 이벤트 트리거
+                document.getElementById('button-addon2').click();
+            }
+        });
 
       const editor = CodeMirror(document.getElementById("editor"), {
           mode: {name: "javascript", json: true},
