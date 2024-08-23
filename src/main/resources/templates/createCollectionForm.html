@@ -115,6 +115,9 @@
                                     <div class="mb-3">
                                         <label class="form-label">Content-Type</label>
                                         <br>
+                                        <input type="radio" id="none" name="contentType" value="none"
+                                               th:checked="${contentType == 'none'}">
+                                        <label for="none">none</label>
                                         <input type="radio" id="json" name="contentType" value="json" required
                                                th:checked="${contentType == 'json'}">
                                         <label for="json">Json</label>
@@ -142,6 +145,38 @@
         </div>
 
         <script>
+
+        function toggleEditorVisibility() {
+            const noneSelected = document.getElementById("none").checked;
+            const editorContainer = document.getElementById("editor");
+
+            if (noneSelected) {
+                editorContainer.style.display = 'none';
+                editor.setValue("");
+            } else {
+                editorContainer.style.display = 'block';
+            }
+        }
+
+            // 라디오 버튼에 change 이벤트 리스너 추가
+        document.querySelectorAll('input[name="contentType"]').forEach(radio => {
+            radio.addEventListener('change', toggleEditorVisibility);
+        });
+
+        // 페이지 로드 시 초기 상태 설정
+        window.onload = function() {
+            const initialBody = document.getElementById("body").value;
+            editor.setValue(initialBody);
+
+            const initialResponse = document.getElementById("responseTextarea").value;
+            responseEditor.setValue(initialResponse);
+
+            editor.setSize("100%", "300px");
+            responseEditor.setSize("100%", "600px");
+
+            // 초기 로드 시 editor 표시 여부 설정
+            toggleEditorVisibility();
+        };
 
         function getSelectedHeaders() {
             const selectedKeys = [];

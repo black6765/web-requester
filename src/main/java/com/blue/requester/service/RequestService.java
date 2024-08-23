@@ -1,6 +1,7 @@
 package com.blue.requester.service;
 
 import com.blue.requester.dto.ItemDTO;
+import com.blue.requester.exception.EmptyBodyException;
 import com.blue.requester.exception.InvalidHttpMethodException;
 import com.blue.requester.message.ExceptionMessage;
 import com.blue.requester.repository.CollectionRepository;
@@ -140,6 +141,13 @@ public class RequestService {
         WebClient client = WebClient.builder()
                 .build();
 
+        Boolean isValidBodyAndHttpMethod = true;
+
+        if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
+            if (body == null || body.isEmpty())
+                isValidBodyAndHttpMethod = false;
+        }
+
         MediaType selectedContentType = switch (contentType.toLowerCase()) {
             case "json" -> MediaType.APPLICATION_JSON;
             case "text" -> MediaType.TEXT_PLAIN;
@@ -150,6 +158,10 @@ public class RequestService {
         String responseBody = "{}";
 
         try {
+            if (!isValidBodyAndHttpMethod) {
+                throw new EmptyBodyException();
+            }
+
             responseBody = switch (httpMethod) {
                 case "GET" -> client.get()
                         .uri(replacedUrl)
