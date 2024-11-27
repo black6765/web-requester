@@ -15,11 +15,6 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
-
-        for (String key : collectionRepository.getCollectionsStore().keySet()) {
-            System.out.println("key = " + key);
-        }
-
         return "home";
     }
 }
