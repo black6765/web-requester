@@ -80,7 +80,7 @@ public class RequestService {
         }
 
         if (!environmentRepository.getGlobalVariables().isEmpty()) {
-            replacedUrl = replaceVariables(request.getUrl(), environmentRepository.getGlobalVariables());
+            replacedUrl = replaceVariables(replacedUrl, environmentRepository.getGlobalVariables());
         }
 
         String response = sendRequestAndGetResponse(replacedUrl, request, httpHeaders);
