@@ -15,8 +15,8 @@ import java.util.Set;
 public class Request {
     Map<String, CollectionDTO> collections;
     String url;
-    List<String> headersKeys;
-    List<String> headersValues;
+    List<String> headerKeys;
+    List<String> headerValues;
     String body;
     String httpMethod;
     String contentType;

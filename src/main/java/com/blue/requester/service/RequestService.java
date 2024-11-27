@@ -193,8 +193,8 @@ public class RequestService {
 
     private HttpHeaders getHttpHeadersByHeadersMap(Request request, final Map<String, String> headers) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        List<String> headersKeys = request.getHeadersKeys();
-        List<String> headersValues = request.getHeadersValues();
+        List<String> headersKeys = request.getHeaderKeys();
+        List<String> headersValues = request.getHeaderValues();
         Set<String> selectedHeaders = request.getSelectedHeaders();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {

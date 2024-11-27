@@ -48,9 +48,9 @@
                                     <input type="checkbox" class="form-check-input" value="${header.key}"
                                            th:checked="${selectedHeaders != null && selectedHeaders.contains(header.key)}"
                                            style="margin-right: 10px;">
-                                    <input type="text" class="form-control-sm" name="headersKey"
+                                    <input type="text" class="form-control-sm" name="headerKeys"
                                            placeholder="Header Key" th:value="${header.key}">
-                                    <input type="text" class="form-control-sm" name="headersValue"
+                                    <input type="text" class="form-control-sm" name="headerValues"
                                            placeholder="Header Value" th:value="${header.value}">
                                     <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del
                                     </button>
@@ -99,7 +99,7 @@
         function getSelectedHeaders() {
             const selectedKeys = [];
             const checkboxes = document.querySelectorAll("#header-container input[type='checkbox']");
-            const headerInputs = document.querySelectorAll("#header-container input[name='headersKey']");
+            const headerInputs = document.querySelectorAll("#header-container input[name='headerKeys']");
 
             checkboxes.forEach((checkbox, index) => {
                 if (checkbox.checked) {
@@ -141,8 +141,8 @@
             inputGroup.className = "input-group mb-2";
             inputGroup.innerHTML = `
                                     <input type="checkbox" class="form-check-input" value="\${header.key}" style="margin-right: 10px;">
-                                    <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key">
-                                    <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value">
+                                    <input type="text" class="form-control-sm" name="headerKeys" placeholder="Header Key">
+                                    <input type="text" class="form-control-sm" name="headerValues" placeholder="Header Value">
                                     <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
             `;
             headerContainer.appendChild(inputGroup);
