@@ -21,7 +21,8 @@ public class EnvironmentService {
     private final CollectionRepository collectionRepository;
 
     public EnvironmentDTO selectEnv() {
-        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(), EnvironmentRepository.GLOBAL_ENV_NAME, null);
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(),
+                EnvironmentRepository.GLOBAL_ENV_NAME, environmentRepository.getCurrentEnvName(), null);
     }
 
 
@@ -36,23 +37,27 @@ public class EnvironmentService {
             variables = environmentRepository.getGlobalVariables();
         }
 
-        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), List.of(envName), EnvironmentRepository.GLOBAL_ENV_NAME, variables);
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), List.of(envName),
+                EnvironmentRepository.GLOBAL_ENV_NAME, environmentRepository.getCurrentEnvName(), variables);
     }
 
     public EnvironmentDTO activateEnv(String activateEnvName) {
         environmentRepository.setCurrentEnvName(activateEnvName);
-        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(), EnvironmentRepository.GLOBAL_ENV_NAME, null);
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(),
+                EnvironmentRepository.GLOBAL_ENV_NAME, environmentRepository.getCurrentEnvName(), null);
     }
 
     public EnvironmentDTO saveEnv(String envName, List<String> variableKeys, List<String> variableValues) {
         Map<String, String> variables = convertTwoListToMap(variableKeys, variableValues);
         environmentRepository.save(envName, variables);
-        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(), EnvironmentRepository.GLOBAL_ENV_NAME, null);
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(),
+                EnvironmentRepository.GLOBAL_ENV_NAME, environmentRepository.getCurrentEnvName(), null);
     }
 
     public EnvironmentDTO deleteEnv(String deleteEnvName) {
         environmentRepository.getEnvStore().remove(deleteEnvName);
-        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(), EnvironmentRepository.GLOBAL_ENV_NAME, null);
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(),
+                EnvironmentRepository.GLOBAL_ENV_NAME, environmentRepository.getCurrentEnvName(), null);
 
     }
 

@@ -24,6 +24,7 @@ public class EnvironmentController {
         model.addAttribute("collections", environmentDTO.getCollections());
         model.addAttribute("envNames", environmentDTO.getEnvNames());
         model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        model.addAttribute("currentEnvName", environmentDTO.getCurrentEnvName());
         return "selectEnv";
     }
 
@@ -35,6 +36,7 @@ public class EnvironmentController {
         model.addAttribute("envName", environmentDTO.getEnvNames().get(0));
         model.addAttribute("variables", environmentDTO.getVariables());
         model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        model.addAttribute("currentEnvName", environmentDTO.getCurrentEnvName());
 
         return "setEnv";
 
@@ -46,6 +48,7 @@ public class EnvironmentController {
         model.addAttribute("collections", environmentDTO.getCollections());
         model.addAttribute("envNames", environmentDTO.getEnvNames());
         model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        model.addAttribute("currentEnvName", environmentDTO.getCurrentEnvName());
         return "selectEnv";
     }
 
@@ -59,6 +62,7 @@ public class EnvironmentController {
         model.addAttribute("collections", environmentDTO.getCollections());
         model.addAttribute("envNames", environmentDTO.getEnvNames());
         model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        model.addAttribute("currentEnvName", environmentDTO.getCurrentEnvName());
         return "selectEnv";
     }
 
@@ -68,6 +72,7 @@ public class EnvironmentController {
         model.addAttribute("collections", environmentDTO.getCollections());
         model.addAttribute("envNames", environmentDTO.getEnvNames());
         model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        model.addAttribute("currentEnvName", environmentDTO.getCurrentEnvName());
         return "selectEnv";
     }
 

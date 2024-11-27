@@ -14,5 +14,6 @@ public class EnvironmentDTO {
     Map<String, CollectionDTO> collections;
     List<String> envNames;
     String exceptEnvName;
+    String currentEnvName;
     Map<String, String> variables;
 }
