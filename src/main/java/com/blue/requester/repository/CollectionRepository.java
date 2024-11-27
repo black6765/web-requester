@@ -1,6 +1,6 @@
 package com.blue.requester.repository;
 
-import com.blue.requester.dto.CollectionDTO;
+import com.blue.requester.domain.dto.CollectionDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

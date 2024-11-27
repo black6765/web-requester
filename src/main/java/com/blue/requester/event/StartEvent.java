@@ -1,6 +1,6 @@
 package com.blue.requester.event;
 
-import com.blue.requester.dto.CollectionDTO;
+import com.blue.requester.domain.dto.CollectionDTO;
 import com.blue.requester.repository.EnvironmentRepository;
 import com.blue.requester.service.CollectionService;
 import com.fasterxml.jackson.core.type.TypeReference;

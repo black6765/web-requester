@@ -1,8 +1,8 @@
 package com.blue.requester.service;
 
-import com.blue.requester.dto.CollectionDTO;
-import com.blue.requester.dto.ItemDTO;
-import com.blue.requester.dto.WorkspaceDTO;
+import com.blue.requester.domain.dto.CollectionDTO;
+import com.blue.requester.domain.dto.ItemDTO;
+import com.blue.requester.domain.dto.WorkspaceDTO;
 import com.blue.requester.repository.CollectionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

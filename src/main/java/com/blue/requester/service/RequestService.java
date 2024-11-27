@@ -1,6 +1,9 @@
 package com.blue.requester.service;
 
-import com.blue.requester.dto.ItemDTO;
+import com.blue.requester.domain.dto.ItemDTO;
+import com.blue.requester.domain.dto.RequestFormDTO;
+import com.blue.requester.domain.dto.ResultDTO;
+import com.blue.requester.domain.request.Request;
 import com.blue.requester.exception.EmptyBodyException;
 import com.blue.requester.exception.InvalidHttpMethodException;
 import com.blue.requester.message.ExceptionMessage;
@@ -14,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -34,22 +36,10 @@ public class RequestService {
     private final EnvironmentRepository environmentRepository;
     private final ObjectMapper objectMapper;
 
-    public String requestForm(Model model, final String collectionName, final String workspaceName, final String itemName) {
+    public RequestFormDTO requestForm(final String collectionName, final String workspaceName, final String itemName) {
         ItemDTO itemDTO = getItem(collectionName, workspaceName, itemName);
-
-        model.addAttribute("collections", collectionRepository.getCollectionsStore());
-        model.addAttribute("url", itemDTO.getUrl());
-        model.addAttribute("headers", itemDTO.getHeaders());
-        model.addAttribute("body", itemDTO.getBody());
-        model.addAttribute("httpMethod", itemDTO.getHttpMethod());
-        model.addAttribute("contentType", itemDTO.getContentType());
-        model.addAttribute("selectedHeaders", itemDTO.selectedHeaders);
-
-        model.addAttribute("collectionName", collectionName);
-        model.addAttribute("workspaceName", workspaceName);
-        model.addAttribute("itemName", itemName);
-
-        return "request";
+        new RequestFormDTO(itemDTO, collectionRepository.getCollectionsStore());
+        return new RequestFormDTO(itemDTO, collectionRepository.getCollectionsStore());
     }
 
     private ItemDTO getItem(final String collectionName, final String workspaceName, final String itemName) {
@@ -75,41 +65,27 @@ public class RequestService {
         return result.toString();
     }
 
-    public String request(Model model, final String url, final List<String> headersKeys, final List<String> headersValues, final String body, final String httpMethod,
-                          final String collectionName, final String workspaceName, final String itemName, final String contentType, final Set<String> selectedHeaders) throws JsonProcessingException {
+    public ResultDTO request(Request request) throws JsonProcessingException {
 
         Map<String, String> headers = new TreeMap<>();
 
-        HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(headersKeys, headersValues, headers, selectedHeaders);
-        saveItem(url, body, httpMethod, contentType, collectionName, workspaceName, itemName, headers, selectedHeaders);
+        HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(request, headers);
+        saveItem(request, headers);
 
-        String replacedUrl = url;
+        String replacedUrl = request.getUrl();
         String currentEnvName = environmentRepository.getCurrentEnvName();
 
         if (currentEnvName != null && !"None".equals(currentEnvName)) {
-            replacedUrl = replaceVariables(url, environmentRepository.getCurrentEnvVariables());
+            replacedUrl = replaceVariables(request.getUrl(), environmentRepository.getCurrentEnvVariables());
         }
 
         if (!environmentRepository.getGlobalVariables().isEmpty()) {
-            replacedUrl = replaceVariables(url, environmentRepository.getGlobalVariables());
+            replacedUrl = replaceVariables(request.getUrl(), environmentRepository.getGlobalVariables());
         }
 
-        String response = sendRequestAndGetResponse(replacedUrl, body, httpMethod, httpHeaders, contentType);
+        String response = sendRequestAndGetResponse(replacedUrl, request, httpHeaders);
 
-        model.addAttribute("collections", collectionRepository.getCollectionsStore());
-        model.addAttribute("url", url);
-        model.addAttribute("httpMethod", httpMethod);
-        model.addAttribute("headers", headers);
-        model.addAttribute("contentType", contentType);
-        model.addAttribute("body", convertStringToPrettyJson(body));
-        model.addAttribute("selectedHeaders", selectedHeaders);
-        model.addAttribute("response", convertStringToPrettyJson(response));
-
-        model.addAttribute("collectionName", collectionName);
-        model.addAttribute("workspaceName", workspaceName);
-        model.addAttribute("itemName", itemName);
-
-        return "request";
+        return new ResultDTO(collectionRepository.getCollectionsStore(), headers, convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response));
     }
 
     private boolean isJsonType(String response) {
@@ -136,11 +112,15 @@ public class RequestService {
         }
     }
 
-    private String sendRequestAndGetResponse(final String replacedUrl, final String body, final String httpMethod, final HttpHeaders httpHeaders, final String contentType) {
+    private String sendRequestAndGetResponse(final String replacedUrl, final Request request, final HttpHeaders httpHeaders) {
         WebClient client = WebClient.builder()
                 .build();
 
         Boolean isValidBodyAndHttpMethod = true;
+
+        String httpMethod = request.getHttpMethod();
+        String body = request.getBody();
+        String contentType = request.getContentType();
 
         if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
             if (body == null || body.isEmpty())
@@ -201,19 +181,21 @@ public class RequestService {
         return responseBody;
     }
 
-    private void saveItem(final String url, final String body, final String httpMethod, final String contentType,
-                          final String collectionName, final String workspaceName, final String itemName, final Map<String, String> headers, final Set<String> selectedHeaders) {
-        ItemDTO itemDTO = getItem(collectionName, workspaceName, itemName);
-        itemDTO.setUrl(url);
-        itemDTO.setHttpMethod(httpMethod);
-        itemDTO.setContentType(contentType);
+    private void saveItem(final Request request, final Map<String, String> headers) {
+        ItemDTO itemDTO = getItem(request.getCollectionName(), request.getWorkspaceName(), request.getItemName());
+        itemDTO.setUrl(request.getUrl());
+        itemDTO.setHttpMethod(request.getHttpMethod());
+        itemDTO.setContentType(request.getContentType());
         itemDTO.setHeaders(headers);
-        itemDTO.setBody(body);
-        itemDTO.setSelectedHeaders(selectedHeaders);
+        itemDTO.setBody(request.getBody());
+        itemDTO.setSelectedHeaders(request.getSelectedHeaders());
     }
 
-    private HttpHeaders getHttpHeadersByHeadersMap(final List<String> headersKeys, final List<String> headersValues, final Map<String, String> headers, final Set<String> selectedHeaders) {
+    private HttpHeaders getHttpHeadersByHeadersMap(Request request, final Map<String, String> headers) {
         HttpHeaders httpHeaders = new HttpHeaders();
+        List<String> headersKeys = request.getHeadersKeys();
+        List<String> headersValues = request.getHeadersValues();
+        Set<String> selectedHeaders = request.getSelectedHeaders();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
             for (int i = 0; i < headersKeys.size(); i++) {

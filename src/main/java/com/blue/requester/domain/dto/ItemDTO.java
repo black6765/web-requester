@@ -1,4 +1,4 @@
-package com.blue.requester.dto;
+package com.blue.requester.domain.dto;
 
 import lombok.*;
 import lombok.experimental.Accessors;

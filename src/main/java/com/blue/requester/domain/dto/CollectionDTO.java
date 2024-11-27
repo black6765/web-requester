@@ -1,4 +1,4 @@
-package com.blue.requester.dto;
+package com.blue.requester.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,11 +10,10 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkspaceDTO {
+public class CollectionDTO {
 
     @Setter
     public String name;
-    @Setter
-    public String collectionName;
-    public Map<String, ItemDTO> items;
+    public Map<String, WorkspaceDTO> workspaces;
+
 }
