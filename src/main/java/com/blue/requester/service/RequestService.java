@@ -95,16 +95,15 @@ public class RequestService {
         }
 
         String response = sendRequestAndGetResponse(replacedUrl, body, httpMethod, httpHeaders, contentType);
-        response = getStringtoPrettyJson(response);
 
         model.addAttribute("collections", collectionRepository.getCollectionsStore());
         model.addAttribute("url", url);
         model.addAttribute("httpMethod", httpMethod);
         model.addAttribute("headers", headers);
         model.addAttribute("contentType", contentType);
-        model.addAttribute("body", body);
+        model.addAttribute("body", convertStringToPrettyJson(body));
         model.addAttribute("selectedHeaders", selectedHeaders);
-        model.addAttribute("response", response);
+        model.addAttribute("response", convertStringToPrettyJson(response));
 
         model.addAttribute("collectionName", collectionName);
         model.addAttribute("workspaceName", workspaceName);
@@ -124,7 +123,7 @@ public class RequestService {
         return isJsonType;
     }
 
-    private String getStringtoPrettyJson(final String response) {
+    private String convertStringToPrettyJson(final String response) {
         try {
             Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<>() {
             });
