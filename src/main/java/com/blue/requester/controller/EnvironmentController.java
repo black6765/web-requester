@@ -1,5 +1,6 @@
 package com.blue.requester.controller;
 
+import com.blue.requester.domain.dto.EnvironmentDTO;
 import com.blue.requester.service.EnvironmentService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,17 +20,33 @@ public class EnvironmentController {
 
     @GetMapping("/env/selectForm")
     public String selectEnv(Model model) {
-        return environmentService.selectEnv(model);
+        EnvironmentDTO environmentDTO = environmentService.selectEnv();
+        model.addAttribute("collections", environmentDTO.getCollections());
+        model.addAttribute("envNames", environmentDTO.getEnvNames());
+        model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        return "selectEnv";
     }
 
     @GetMapping("/env")
     public String sendEnvMap(Model model, @RequestParam("envName") String envName) {
-        return environmentService.sendEnvMap(model, envName);
+        EnvironmentDTO environmentDTO = environmentService.sendEnvMap(envName);
+
+        model.addAttribute("collections", environmentDTO.getCollections());
+        model.addAttribute("envName", environmentDTO.getEnvNames().get(0));
+        model.addAttribute("variables", environmentDTO.getVariables());
+        model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+
+        return "setEnv";
+
     }
 
     @PostMapping("/env/activation")
     public String activateEnv(Model model, @RequestParam("activateEnvName") String activateEnvName) {
-        return environmentService.activateEnv(model, activateEnvName);
+        EnvironmentDTO environmentDTO = environmentService.activateEnv(activateEnvName);
+        model.addAttribute("collections", environmentDTO.getCollections());
+        model.addAttribute("envNames", environmentDTO.getEnvNames());
+        model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        return "selectEnv";
     }
 
     @PostMapping("/env")
@@ -38,12 +55,20 @@ public class EnvironmentController {
                           @RequestParam("variableKey") List<String> variableKeys,
                           @RequestParam("variableValue") List<String> variableValues) {
 
-        return environmentService.saveEnv(model, envName, variableKeys, variableValues);
+        EnvironmentDTO environmentDTO = environmentService.saveEnv(envName, variableKeys, variableValues);
+        model.addAttribute("collections", environmentDTO.getCollections());
+        model.addAttribute("envNames", environmentDTO.getEnvNames());
+        model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        return "selectEnv";
     }
 
     @DeleteMapping("/env")
     public String deleteEnv(Model model, @RequestParam("deleteEnvName") String deleteEnvName) {
-        return environmentService.deleteEnv(model, deleteEnvName);
+        EnvironmentDTO environmentDTO = environmentService.deleteEnv(deleteEnvName);
+        model.addAttribute("collections", environmentDTO.getCollections());
+        model.addAttribute("envNames", environmentDTO.getEnvNames());
+        model.addAttribute("exceptEnvName", environmentDTO.getExceptEnvName());
+        return "selectEnv";
     }
 
 }

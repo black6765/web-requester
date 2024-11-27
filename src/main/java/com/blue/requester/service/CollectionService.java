@@ -58,9 +58,9 @@ public class CollectionService {
         return "redirect:/collection/createForm";
     }
 
-    public String createItem(final String collectionName, final String workspaceName, final String itemName,
-                             final String url, final String httpMethod, final String body,
-                             final List<String> headersKeys, List<String> headersValues, final String contentType, final Set<String> selectedHeaders) {
+    public void createItem(final String collectionName, final String workspaceName, final String itemName,
+                           final String url, final String httpMethod, final String body,
+                           final List<String> headersKeys, List<String> headersValues, final String contentType, final Set<String> selectedHeaders) {
         Map<String, String> headers = new TreeMap<>();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
@@ -73,11 +73,9 @@ public class CollectionService {
 
         ItemDTO itemDTO = new ItemDTO(itemName, collectionName, workspaceName, url, httpMethod, contentType, headers, body, selectedHeaders);
         collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().put(itemName, itemDTO);
-
-        return "redirect:/collection/createForm";
     }
 
-    public String renameCollection(final String collectionName, final String workspaceName, final String itemName, final String targetName) {
+    public void renameCollection(final String collectionName, final String workspaceName, final String itemName, final String targetName) {
         Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
 
         if (ObjectUtils.isEmpty(workspaceName)) {
@@ -121,11 +119,9 @@ public class CollectionService {
             item.setName(targetName);
             log.info("Item [{}] <in [{}] Workspace in [{}] Collection> renamed to [{}]", itemName, workspaceName, collectionName, targetName);
         }
-
-        return "renameCollectionForm";
     }
 
-    public String copyCollection(final String collectionName, final String workspaceName, final String itemName, final String targetName) {
+    public void copyCollection(final String collectionName, final String workspaceName, final String itemName, final String targetName) {
         Map<String, CollectionDTO> store = collectionRepository.getCollectionsStore();
 
         if (ObjectUtils.isEmpty(workspaceName)) {
@@ -169,8 +165,6 @@ public class CollectionService {
             store.get(collectionName).getWorkspaces().get(workspaceName).getItems().put(targetName, copiedItem);
             log.info("Item [{}] <in [{}] Workspace in [{}] Collection> copy to [{}]", itemName, workspaceName, collectionName, targetName);
         }
-
-        return "copyCollectionForm";
     }
 
     public String deleteCollection(final String collectionName, final String workspaceName, final String itemName) {

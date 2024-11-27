@@ -21,7 +21,7 @@ public class RequestController {
     private final RequestService requestService;
 
     @PostMapping("/request")
-    public String Response(Model model, @ModelAttribute Request request) throws JsonProcessingException {
+    public String request(Model model, @ModelAttribute Request request) throws JsonProcessingException {
         ResultDTO result = requestService.request(request);
 
         model.addAttribute("collections", result.getCollections());

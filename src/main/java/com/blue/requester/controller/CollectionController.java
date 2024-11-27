@@ -46,7 +46,8 @@ public class CollectionController {
             @RequestParam(value = "headersKey", required = false) List<String> headersKeys,
             @RequestParam(value = "headersValue", required = false) List<String> headersValues,
             @RequestParam("selectedHeaders") Set<String> selectedHeaders) {
-        return collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues, contentType, selectedHeaders);
+        collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues, contentType, selectedHeaders);
+        return "redirect:/collection/createForm";
     }
 
     @GetMapping("/collection/deleteForm")
@@ -76,7 +77,8 @@ public class CollectionController {
             @RequestParam(value = "workspaceSelect", required = false) String workspace,
             @RequestParam(value = "itemSelect", required = false) String item,
             @RequestParam(value = "name") String name) {
-        return collectionService.renameCollection(collection, workspace, item, name);
+        collectionService.renameCollection(collection, workspace, item, name);
+        return "renameCollectionForm";
     }
 
     @GetMapping("/collection/copyForm")
@@ -91,7 +93,8 @@ public class CollectionController {
             @RequestParam(value = "workspaceSelect", required = false) String workspace,
             @RequestParam(value = "itemSelect", required = false) String item,
             @RequestParam(value = "name") String name) {
-        return collectionService.copyCollection(collection, workspace, item, name);
+        collectionService.copyCollection(collection, workspace, item, name);
+        return "copyCollectionForm";
     }
 
     @GetMapping("/collectionNameList")

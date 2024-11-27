@@ -1,14 +1,13 @@
 package com.blue.requester.service;
 
+import com.blue.requester.domain.dto.EnvironmentDTO;
 import com.blue.requester.repository.CollectionRepository;
 import com.blue.requester.repository.EnvironmentRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,15 +20,12 @@ public class EnvironmentService {
     private final EnvironmentRepository environmentRepository;
     private final CollectionRepository collectionRepository;
 
-    public String selectEnv(Model model) {
-        model.addAttribute("collections", collectionRepository.getCollectionsStore());
-        model.addAttribute("envNames", environmentRepository.getEnvNames());
-        model.addAttribute("exceptEnvName", EnvironmentRepository.GLOBAL_ENV_NAME);
-        return "selectEnv";
+    public EnvironmentDTO selectEnv() {
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(), EnvironmentRepository.GLOBAL_ENV_NAME, null);
     }
 
 
-    public String sendEnvMap(Model model, String envName) {
+    public EnvironmentDTO sendEnvMap(String envName) {
         Map<String, String> variables = environmentRepository.getEnvStore().get(envName);
 
         if ("NEW_ENVIRONMENT".equals(envName)) {
@@ -40,47 +36,24 @@ public class EnvironmentService {
             variables = environmentRepository.getGlobalVariables();
         }
 
-        model.addAttribute("collections", collectionRepository.getCollectionsStore());
-        model.addAttribute("envName", envName);
-        model.addAttribute("variables", variables);
-        model.addAttribute("exceptEnvName", EnvironmentRepository.GLOBAL_ENV_NAME);
-
-        return "setEnv";
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), List.of(envName), EnvironmentRepository.GLOBAL_ENV_NAME, variables);
     }
 
-    public String activateEnv(Model model, String activateEnvName) {
+    public EnvironmentDTO activateEnv(String activateEnvName) {
         environmentRepository.setCurrentEnvName(activateEnvName);
-
-        model.addAttribute("collections", collectionRepository.getCollectionsStore());
-        model.addAttribute("envNames", environmentRepository.getEnvNames());
-        model.addAttribute("exceptEnvName", EnvironmentRepository.GLOBAL_ENV_NAME);
-
-        return "selectEnv";
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(), EnvironmentRepository.GLOBAL_ENV_NAME, null);
     }
 
-    public String saveEnv(Model model, String envName, List<String> variableKeys, List<String> variableValues) {
+    public EnvironmentDTO saveEnv(String envName, List<String> variableKeys, List<String> variableValues) {
         Map<String, String> variables = convertTwoListToMap(variableKeys, variableValues);
-
         environmentRepository.save(envName, variables);
-
-        List<String> envNames = new ArrayList<>(environmentRepository.getEnvStore().keySet());
-
-        model.addAttribute("collections", collectionRepository.getCollectionsStore());
-        model.addAttribute("envNames", envNames);
-        model.addAttribute("exceptEnvName", EnvironmentRepository.GLOBAL_ENV_NAME);
-
-        return "selectEnv";
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(), EnvironmentRepository.GLOBAL_ENV_NAME, null);
     }
 
-    public String deleteEnv(Model model, String deleteEnvName) {
+    public EnvironmentDTO deleteEnv(String deleteEnvName) {
         environmentRepository.getEnvStore().remove(deleteEnvName);
-        List<String> envNames = new ArrayList<>(environmentRepository.getEnvStore().keySet());
+        return new EnvironmentDTO(collectionRepository.getCollectionsStore(), environmentRepository.getEnvNames(), EnvironmentRepository.GLOBAL_ENV_NAME, null);
 
-        model.addAttribute("collections", collectionRepository.getCollectionsStore());
-        model.addAttribute("envNames", envNames);
-        model.addAttribute("exceptEnvName", EnvironmentRepository.GLOBAL_ENV_NAME);
-
-        return "selectEnv";
     }
 
     private Map<String, String> convertTwoListToMap(List<String> variableKeys, List<String> variableValues) {
