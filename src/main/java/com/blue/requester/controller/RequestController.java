@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,32 +21,12 @@ public class RequestController {
 
     private final RequestService requestService;
 
-    @PostMapping("/request")
-    public String request(Model model, @ModelAttribute Request request) throws JsonProcessingException {
-        ResultDTO result = requestService.request(request);
-
-        model.addAttribute("collections", result.getCollections());
-        model.addAttribute("url", request.getUrl());
-        model.addAttribute("httpMethod", request.getHttpMethod());
-        model.addAttribute("headers", result.getHeaders());
-        model.addAttribute("contentType", request.getContentType());
-        model.addAttribute("body", result.getBody());
-        model.addAttribute("selectedHeaders", request.getSelectedHeaders());
-        model.addAttribute("response", result.getResponse());
-
-        model.addAttribute("collectionName", request.getCollectionName());
-        model.addAttribute("workspaceName", request.getWorkspaceName());
-        model.addAttribute("itemName", request.getItemName());
-
-        return "request";
-    }
-
-    @GetMapping("/request/{collection}/{workspace}/{item}")
+    @GetMapping("/request/{collectionName}/{workspaceName}/{itemName}")
     public String requestForm(Model model,
-                              @PathVariable("collection") String collection,
-                              @PathVariable("workspace") String workspace,
-                              @PathVariable("item") String item) {
-        RequestFormDTO requestForm = requestService.requestForm(collection, workspace, item);
+                              @PathVariable("collectionName") String collectionName,
+                              @PathVariable("workspaceName") String workspaceName,
+                              @PathVariable("itemName") String itemName) {
+        RequestFormDTO requestForm = requestService.requestForm(collectionName, workspaceName, itemName);
         ItemDTO itemDTO = requestForm.getItemDTO();
 
         model.addAttribute("collections", requestForm.getCollections());
@@ -61,6 +42,22 @@ public class RequestController {
         model.addAttribute("itemName", itemDTO.name);
 
         return "request";
+    }
+
+    @PostMapping("/request")
+    public String request(RedirectAttributes redirectAttributes, @ModelAttribute Request request) throws JsonProcessingException {
+        ResultDTO result = requestService.request(request);
+
+        redirectAttributes.addFlashAttribute("collections", result.getCollections());
+        redirectAttributes.addFlashAttribute("headers", result.getHeaders());
+        redirectAttributes.addFlashAttribute("body", result.getBody());
+        redirectAttributes.addFlashAttribute("response", result.getResponse());
+
+        redirectAttributes.addAttribute("collectionName", request.getCollectionName());
+        redirectAttributes.addAttribute("workspaceName", request.getWorkspaceName());
+        redirectAttributes.addAttribute("itemName", request.getItemName());
+
+        return "redirect:/request/{collectionName}/{workspaceName}/{itemName}";
     }
 
 }
