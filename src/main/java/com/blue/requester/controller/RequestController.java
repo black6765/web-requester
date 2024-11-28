@@ -41,7 +41,7 @@ public class RequestController {
         model.addAttribute("workspaceName", itemDTO.workspaceName);
         model.addAttribute("itemName", itemDTO.name);
 
-        return "request";
+        return "requestForm";
     }
 
     @PostMapping("/request")
