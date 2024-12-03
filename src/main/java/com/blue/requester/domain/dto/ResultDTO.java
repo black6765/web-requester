@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -11,7 +12,9 @@ import java.util.Map;
 @AllArgsConstructor
 public class ResultDTO {
     Map<String, CollectionDTO> collections;
-    Map<String, String> headers;
+    List<String> headerKeys;
+    List<String> headerValues;
+
     String body;
     String response;
 }

@@ -3,7 +3,7 @@ package com.blue.requester.domain.dto;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -21,7 +21,8 @@ public class ItemDTO {
         this.url = itemDTO.getUrl();
         this.httpMethod = itemDTO.getHttpMethod();
         this.contentType = itemDTO.getContentType();
-        this.headers = itemDTO.getHeaders();
+        this.headerKeys = itemDTO.getHeaderKeys();
+        this.headerValues = itemDTO.getHeaderValues();
         this.body = itemDTO.getBody();
         this.selectedHeaders = itemDTO.getSelectedHeaders();
     }
@@ -35,7 +36,8 @@ public class ItemDTO {
     public String url;
     public String httpMethod;
     public String contentType;
-    public Map<String, String> headers;
+    public List<String> headerKeys;
+    public List<String> headerValues;
     public String body;
     public Set<String> selectedHeaders;
 }

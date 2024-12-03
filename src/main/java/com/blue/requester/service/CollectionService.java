@@ -71,7 +71,7 @@ public class CollectionService {
             }
         }
 
-        ItemDTO itemDTO = new ItemDTO(itemName, collectionName, workspaceName, url, httpMethod, contentType, headers, body, selectedHeaders);
+        ItemDTO itemDTO = new ItemDTO(itemName, collectionName, workspaceName, url, httpMethod, contentType, headersKeys, headersValues, body, selectedHeaders);
         collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().put(itemName, itemDTO);
     }
 

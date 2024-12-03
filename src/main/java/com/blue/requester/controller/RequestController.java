@@ -31,7 +31,8 @@ public class RequestController {
 
         model.addAttribute("collections", requestForm.getCollections());
         model.addAttribute("url", itemDTO.getUrl());
-        model.addAttribute("headers", itemDTO.getHeaders());
+        model.addAttribute("headerKeys", itemDTO.getHeaderKeys());
+        model.addAttribute("headerValues", itemDTO.getHeaderValues());
         model.addAttribute("body", itemDTO.getBody());
         model.addAttribute("httpMethod", itemDTO.getHttpMethod());
         model.addAttribute("contentType", itemDTO.getContentType());
@@ -49,7 +50,8 @@ public class RequestController {
         ResultDTO result = requestService.request(request);
 
         redirectAttributes.addFlashAttribute("collections", result.getCollections());
-        redirectAttributes.addFlashAttribute("headers", result.getHeaders());
+        redirectAttributes.addFlashAttribute("headerKeys", result.getHeaderKeys());
+        redirectAttributes.addFlashAttribute("headerValues", result.getHeaderValues());
         redirectAttributes.addFlashAttribute("body", result.getBody());
         redirectAttributes.addFlashAttribute("response", result.getResponse());
 

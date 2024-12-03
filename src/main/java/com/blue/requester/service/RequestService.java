@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
@@ -66,11 +65,8 @@ public class RequestService {
     }
 
     public ResultDTO request(Request request) throws JsonProcessingException {
-
-        Map<String, String> headers = new TreeMap<>();
-
-        HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(request, headers);
-        saveItem(request, headers);
+        HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(request);
+        saveItem(request);
 
         String replacedUrl = request.getUrl();
         String currentEnvName = environmentRepository.getCurrentEnvName();
@@ -85,19 +81,19 @@ public class RequestService {
 
         String response;
         if (request.isCurlRequest()) {
-            response = getCurlStringByRequest(request, headers, replacedUrl);
+            response = getCurlStringByRequest(request, replacedUrl);
         } else {
             response = sendRequestAndGetResponse(replacedUrl, request, httpHeaders);
         }
 
-        return new ResultDTO(collectionRepository.getCollectionsStore(), headers, convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response));
+        return new ResultDTO(collectionRepository.getCollectionsStore(), request.getHeaderKeys(), request.getHeaderValues(), convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response));
     }
 
-    private String getCurlStringByRequest(Request request, Map<String, String> headers, String replacedUrl) {
+    private String getCurlStringByRequest(Request request, String replacedUrl) {
         StringBuilder sb = new StringBuilder();
 
         appendHttpMethodAndUrl(request, replacedUrl, sb);
-        appendHeaders(request, headers, sb);
+        appendHeaders(request, sb);
         appendJsonBody(request, sb);
 
         return new String(sb);
@@ -108,21 +104,16 @@ public class RequestService {
         sb.append(String.format(" \\\n'%s'", replacedUrl));
     }
 
-    private void appendHeaders(Request request, Map<String, String> headers, StringBuilder sb) {
-        int indexCnt = 0;
-        if (!headers.isEmpty()) {
+    private void appendHeaders(Request request, StringBuilder sb) {
+        if (!request.getHeaderKeys().isEmpty()) {
             sb.append(" \\\n");
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                if (indexCnt != headers.size() - 1) {
-                    sb.append(String.format("--header '%s: %s' \\\n", entry.getKey(), entry.getValue()));
-                } else {
-                    sb.append(String.format("--header '%s: %s'", entry.getKey(), entry.getValue()));
-                }
-                indexCnt++;
+
+            for (int i = 0; i < request.getHeaderKeys().size(); i++) {
+                sb.append(String.format(" \\\n--header '%s: %s'", request.getHeaderKeys().get(i), request.getHeaderValues().get(i)));
             }
         }
 
-        if (request.getContentType().equals("json") && !headers.containsKey("Content-Type")) {
+        if (request.getContentType().equals("json") && !request.getHeaderKeys().contains("Content-Type")) {
             sb.append(" \\\n--header 'Content-Type: application/json'");
         }
     }
@@ -226,17 +217,18 @@ public class RequestService {
         return responseBody;
     }
 
-    private void saveItem(final Request request, final Map<String, String> headers) {
+    private void saveItem(final Request request) {
         ItemDTO itemDTO = getItem(request.getCollectionName(), request.getWorkspaceName(), request.getItemName());
         itemDTO.setUrl(request.getUrl());
         itemDTO.setHttpMethod(request.getHttpMethod());
         itemDTO.setContentType(request.getContentType());
-        itemDTO.setHeaders(headers);
+        itemDTO.setHeaderKeys(request.getHeaderKeys());
+        itemDTO.setHeaderValues(request.getHeaderValues());
         itemDTO.setBody(request.getBody());
         itemDTO.setSelectedHeaders(request.getSelectedHeaders());
     }
 
-    private HttpHeaders getHttpHeadersByHeadersMap(Request request, final Map<String, String> headers) {
+    private HttpHeaders getHttpHeadersByHeadersMap(Request request) {
         HttpHeaders httpHeaders = new HttpHeaders();
         List<String> headersKeys = request.getHeaderKeys();
         List<String> headersValues = request.getHeaderValues();
@@ -245,8 +237,6 @@ public class RequestService {
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
             for (int i = 0; i < headersKeys.size(); i++) {
                 if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) {
-
-                    headers.put(headersKeys.get(i), headersValues.get(i));
                     if (selectedHeaders != null && selectedHeaders.contains(headersKeys.get(i))) {
                         // Hidden function: header value "{{#NUM}}" replaced 100000 ~ 999999(6 digits number)
                         httpHeaders.add(headersKeys.get(i), headersValues.get(i).replace("{{#NUM}}", String.valueOf((int) (Math.random() * 899999) + 100000)));

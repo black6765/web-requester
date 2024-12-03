@@ -46,14 +46,15 @@
                             </button>
                             <br>
                             <div id="header-container" style="display: none;">
-                                <div class="input-group mb-2" th:each="header : ${headers}">
-                                    <input type="checkbox" class="form-check-input" value="${header.key}"
-                                           th:checked="${selectedHeaders != null && selectedHeaders.contains(header.key)}"
+                                <div class="input-group mb-2"
+                                     th:each="num : ${#numbers.sequence(0,headerKeys.size() - 1)}">
+                                    <input type="checkbox" class="form-check-input" value="${headerKeys.get(num)}"
+                                           th:checked="${selectedHeaders != null && selectedHeaders.contains(headerKeys.get(num))}"
                                            style="margin-right: 10px;">
                                     <input type="text" class="form-control-sm" name="headerKeys"
-                                           placeholder="Header Key" th:value="${header.key}">
+                                           placeholder="Header Key" th:value="${headerKeys.get(num)}">
                                     <input type="text" class="form-control-sm" name="headerValues"
-                                           placeholder="Header Value" th:value="${header.value}">
+                                           placeholder="Header Value" th:value="${headerValues.get(num)}">
                                     <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del
                                     </button>
                                 </div>
@@ -153,7 +154,7 @@
             const inputGroup = document.createElement("div");
             inputGroup.className = "input-group mb-2";
             inputGroup.innerHTML = `
-                                    <input type="checkbox" class="form-check-input" value="\${header.key}" style="margin-right: 10px;">
+                                    <input type="checkbox" class="form-check-input" style="margin-right: 10px;">
                                     <input type="text" class="form-control-sm" name="headerKeys" placeholder="Header Key">
                                     <input type="text" class="form-control-sm" name="headerValues" placeholder="Header Value">
                                     <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
