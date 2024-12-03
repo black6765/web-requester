@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,7 +27,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +68,7 @@ public class RequestService {
 
     public ResultDTO request(Request request) throws JsonProcessingException {
 
-        Map<String, String> headers = new TreeMap<>();
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 
         HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(request, headers);
         saveItem(request, headers);
@@ -85,7 +86,7 @@ public class RequestService {
 
         String response;
         if (request.isCurlRequest()) {
-            response = getCurlStringByRequest(request, headers, replacedUrl);
+            response = getCurlStringByRequest(request, httpHeaders, replacedUrl);
         } else {
             response = sendRequestAndGetResponse(replacedUrl, request, httpHeaders);
         }
@@ -93,11 +94,11 @@ public class RequestService {
         return new ResultDTO(collectionRepository.getCollectionsStore(), headers, convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response));
     }
 
-    private String getCurlStringByRequest(Request request, Map<String, String> headers, String replacedUrl) {
+    private String getCurlStringByRequest(Request request, HttpHeaders httpHeaders, String replacedUrl) {
         StringBuilder sb = new StringBuilder();
 
         appendHttpMethodAndUrl(request, replacedUrl, sb);
-        appendHeaders(request, headers, sb);
+        appendHeaders(request, httpHeaders, sb);
         appendJsonBody(request, sb);
 
         return new String(sb);
@@ -108,21 +109,16 @@ public class RequestService {
         sb.append(String.format(" \\\n'%s'", replacedUrl));
     }
 
-    private void appendHeaders(Request request, Map<String, String> headers, StringBuilder sb) {
-        int indexCnt = 0;
-        if (!headers.isEmpty()) {
-            sb.append(" \\\n");
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                if (indexCnt != headers.size() - 1) {
-                    sb.append(String.format("--header '%s: %s' \\\n", entry.getKey(), entry.getValue()));
-                } else {
-                    sb.append(String.format("--header '%s: %s'", entry.getKey(), entry.getValue()));
+    private void appendHeaders(Request request, HttpHeaders httpHeaders, StringBuilder sb) {
+        if (!httpHeaders.isEmpty()) {
+            for (Map.Entry<String, List<String>> entry : httpHeaders.entrySet()) {
+                for (int i = 0; i < entry.getValue().size(); i++) {
+                    sb.append(String.format(" \\\n--header '%s: %s'", entry.getKey(), entry.getValue().get(i)));
                 }
-                indexCnt++;
             }
         }
 
-        if (request.getContentType().equals("json") && !headers.containsKey("Content-Type")) {
+        if (request.getContentType().equals("json") && !httpHeaders.containsKey("Content-Type")) {
             sb.append(" \\\n--header 'Content-Type: application/json'");
         }
     }
@@ -226,7 +222,7 @@ public class RequestService {
         return responseBody;
     }
 
-    private void saveItem(final Request request, final Map<String, String> headers) {
+    private void saveItem(final Request request, final MultiValueMap<String, String> headers) {
         ItemDTO itemDTO = getItem(request.getCollectionName(), request.getWorkspaceName(), request.getItemName());
         itemDTO.setUrl(request.getUrl());
         itemDTO.setHttpMethod(request.getHttpMethod());
@@ -236,7 +232,7 @@ public class RequestService {
         itemDTO.setSelectedHeaders(request.getSelectedHeaders());
     }
 
-    private HttpHeaders getHttpHeadersByHeadersMap(Request request, final Map<String, String> headers) {
+    private HttpHeaders getHttpHeadersByHeadersMap(Request request, final MultiValueMap<String, String> headers) {
         HttpHeaders httpHeaders = new HttpHeaders();
         List<String> headersKeys = request.getHeaderKeys();
         List<String> headersValues = request.getHeaderValues();
@@ -246,7 +242,7 @@ public class RequestService {
             for (int i = 0; i < headersKeys.size(); i++) {
                 if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) {
 
-                    headers.put(headersKeys.get(i), headersValues.get(i));
+                    headers.add(headersKeys.get(i), headersValues.get(i));
                     if (selectedHeaders != null && selectedHeaders.contains(headersKeys.get(i))) {
                         // Hidden function: header value "{{#NUM}}" replaced 100000 ~ 999999(6 digits number)
                         httpHeaders.add(headersKeys.get(i), headersValues.get(i).replace("{{#NUM}}", String.valueOf((int) (Math.random() * 899999) + 100000)));

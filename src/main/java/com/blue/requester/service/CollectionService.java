@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
@@ -61,12 +63,12 @@ public class CollectionService {
     public void createItem(final String collectionName, final String workspaceName, final String itemName,
                            final String url, final String httpMethod, final String body,
                            final List<String> headersKeys, List<String> headersValues, final String contentType, final Set<String> selectedHeaders) {
-        Map<String, String> headers = new TreeMap<>();
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
             for (int i = 0; i < headersKeys.size(); i++) {
                 if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) { // 키와 값이 비어있지 않다면
-                    headers.put(headersKeys.get(i), headersValues.get(i));
+                    headers.add(headersKeys.get(i), headersValues.get(i));
                 }
             }
         }

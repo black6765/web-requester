@@ -2,8 +2,8 @@ package com.blue.requester.domain.dto;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.util.MultiValueMap;
 
-import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -35,7 +35,7 @@ public class ItemDTO {
     public String url;
     public String httpMethod;
     public String contentType;
-    public Map<String, String> headers;
+    public MultiValueMap<String, String> headers;
     public String body;
     public Set<String> selectedHeaders;
 }

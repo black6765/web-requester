@@ -3,6 +3,7 @@ package com.blue.requester.domain.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class ResultDTO {
     Map<String, CollectionDTO> collections;
-    Map<String, String> headers;
+    MultiValueMap<String, String> headers;
     String body;
     String response;
 }
