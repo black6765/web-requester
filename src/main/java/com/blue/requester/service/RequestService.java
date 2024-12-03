@@ -85,7 +85,7 @@ public class RequestService {
 
         String response;
         if (request.isCurlRequest()) {
-            response = getCurlString(request, headers, replacedUrl);
+            response = getCurlStringByRequest(request, headers, replacedUrl);
         } else {
             response = sendRequestAndGetResponse(replacedUrl, request, httpHeaders);
         }
@@ -93,19 +93,44 @@ public class RequestService {
         return new ResultDTO(collectionRepository.getCollectionsStore(), headers, convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response));
     }
 
-    private String getCurlString(Request request, Map<String, String> headers, String replacedUrl) {
+    private String getCurlStringByRequest(Request request, Map<String, String> headers, String replacedUrl) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("curl -X %s \\\n", request.getHttpMethod()));
-        sb.append(String.format("'%s' \\\n", replacedUrl));
-
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            sb.append(String.format("--header '%s: %s' \\\n", entry.getKey(), entry.getValue()));
-        }
-
-        sb.append(String.format("--data '\n%s\n'", request.getBody()));
+        appendHttpMethodAndUrl(request, replacedUrl, sb);
+        appendHeaders(request, headers, sb);
+        appendJsonBody(request, sb);
 
         return new String(sb);
+    }
+
+    private void appendHttpMethodAndUrl(Request request, String replacedUrl, StringBuilder sb) {
+        sb.append(String.format("curl -X %s", request.getHttpMethod()));
+        sb.append(String.format(" \\\n'%s'", replacedUrl));
+    }
+
+    private void appendHeaders(Request request, Map<String, String> headers, StringBuilder sb) {
+        int indexCnt = 0;
+        if (!headers.isEmpty()) {
+            sb.append(" \\\n");
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                if (indexCnt != headers.size() - 1) {
+                    sb.append(String.format("--header '%s: %s' \\\n", entry.getKey(), entry.getValue()));
+                } else {
+                    sb.append(String.format("--header '%s: %s'", entry.getKey(), entry.getValue()));
+                }
+                indexCnt++;
+            }
+        }
+
+        if (request.getContentType().equals("json") && !headers.containsKey("Content-Type")) {
+            sb.append(" \\\n--header 'Content-Type: application/json'");
+        }
+    }
+
+    private void appendJsonBody(Request request, StringBuilder sb) {
+        if (!request.getBody().isEmpty()) {
+            sb.append(String.format(" \\\n--data '\n%s\n'", request.getBody()));
+        }
     }
 
     private boolean isJsonType(String response) {
