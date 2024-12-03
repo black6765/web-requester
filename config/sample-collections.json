@@ -7,14 +7,20 @@
         "collectionName" : "Collection 1",
         "items" : {
           "Item 1" : {
-            "name" : "Item 1",
-            "CollectionName" : "Collection 1",
-            "workspaceName" : "Workspace 1",
-            "url" : "789",
-            "httpMethod" : "GET",
-            "headers" : { },
-            "body" : "{\r\n  \"asd\":123,\r\n  \"sad\":231,\r\n  \"cxczc\" : 3123\r\n}",
-            "collectionName" : "Collection 1"
+            "name": "Item 1",
+            "collectionName": "Collection 1",
+            "workspaceName": "Workspace 1",
+            "url": "http://localhost:8080",
+            "httpMethod": "GET",
+            "contentType": "json",
+            "headers": {
+              "headerKey1": "headerValue1",
+              "headerKey2": "headerValue2"
+            },
+            "body": "{\r\n  \"key1\" : value1,\r\n  \"key2\" : value2,\r\n  \"key3\" : value3\r\n}",
+            "selectedHeaders": [
+              "headerKey1"
+            ]
           }
         }
       }
