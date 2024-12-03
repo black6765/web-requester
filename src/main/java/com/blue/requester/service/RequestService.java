@@ -83,9 +83,29 @@ public class RequestService {
             replacedUrl = replaceVariables(replacedUrl, environmentRepository.getGlobalVariables());
         }
 
-        String response = sendRequestAndGetResponse(replacedUrl, request, httpHeaders);
+        String response;
+        if (request.isCurlRequest()) {
+            response = getCurlString(request, headers, replacedUrl);
+        } else {
+            response = sendRequestAndGetResponse(replacedUrl, request, httpHeaders);
+        }
 
         return new ResultDTO(collectionRepository.getCollectionsStore(), headers, convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response));
+    }
+
+    private String getCurlString(Request request, Map<String, String> headers, String replacedUrl) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("curl -X %s \\\n", request.getHttpMethod()));
+        sb.append(String.format("'%s' \\\n", replacedUrl));
+
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            sb.append(String.format("--header '%s: %s' \\\n", entry.getKey(), entry.getValue()));
+        }
+
+        sb.append(String.format("--data '\n%s\n'", request.getBody()));
+
+        return new String(sb);
     }
 
     private boolean isJsonType(String response) {

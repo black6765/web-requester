@@ -24,4 +24,5 @@ public class Request {
     String workspaceName;
     String itemName;
     Set<String> selectedHeaders;
+    boolean curlRequest;
 }

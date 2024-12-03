@@ -11,6 +11,8 @@
                 <input type="hidden" name="workspaceName" th:value="${workspaceName}"/>
                 <input type="hidden" name="itemName" th:value="${itemName}"/>
 
+                <input type="hidden" name="curlRequest" id="curlRequest" value="false"/>
+
                 <div class="row">
                     <div class="col-6">
                         <h6 class="my-3 border-bottom pb-2">Request</h6>
@@ -83,6 +85,10 @@
                             <textarea id="body" name="body" style="display:none;" th:text="${body}"></textarea>
                             <div id="editor"></div>
                         </div>
+
+                        <button onclick='convertCurlAndRequest()'>
+                            curl
+                        </button>
                     </div>
 
                     <div class="col-6">
@@ -96,6 +102,13 @@
         </div>
 
         <script>
+
+        function convertCurlAndRequest() {
+          const curlRequest = document.getElementById('curlRequest');
+          curlRequest.value = "true";
+          document.getElementById('form').submit();
+        }
+
         function getSelectedHeaders() {
             const selectedKeys = [];
             const checkboxes = document.querySelectorAll("#header-container input[type='checkbox']");
