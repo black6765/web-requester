@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -23,6 +22,6 @@ public class Request {
     String collectionName;
     String workspaceName;
     String itemName;
-    Set<String> selectedHeaders;
+    List<Integer> selectedHeaderIndexes;
     boolean curlRequest;
 }

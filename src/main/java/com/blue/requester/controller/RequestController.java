@@ -36,7 +36,7 @@ public class RequestController {
         model.addAttribute("body", itemDTO.getBody());
         model.addAttribute("httpMethod", itemDTO.getHttpMethod());
         model.addAttribute("contentType", itemDTO.getContentType());
-        model.addAttribute("selectedHeaders", itemDTO.selectedHeaders);
+        model.addAttribute("selectedHeaderIndexes", itemDTO.selectedHeaderIndexes);
 
         model.addAttribute("collectionName", itemDTO.getCollectionName());
         model.addAttribute("workspaceName", itemDTO.workspaceName);

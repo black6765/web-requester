@@ -47,9 +47,9 @@
                             <br>
                             <div id="header-container" style="display: none;">
                                 <div class="input-group mb-2"
-                                     th:each="num : ${#numbers.sequence(0,headerKeys.size() - 1)}">
+                                     th:each="num : ${#numbers.sequence(0, headerKeys.size() - 1)}">
                                     <input type="checkbox" class="form-check-input" value="${headerKeys.get(num)}"
-                                           th:checked="${selectedHeaders != null && selectedHeaders.contains(headerKeys.get(num))}"
+                                           th:checked="${selectedHeaderIndexes != null && selectedHeaderIndexes.contains(num)}"
                                            style="margin-right: 10px;">
                                     <input type="text" class="form-control-sm" name="headerKeys"
                                            placeholder="Header Key" th:value="${headerKeys.get(num)}">
@@ -110,26 +110,26 @@
           document.getElementById('form').submit();
         }
 
-        function getSelectedHeaders() {
-            const selectedKeys = [];
+        function getSelectedHeaderIndexes() {
+            const selectedHeaderIndexes = [];
             const checkboxes = document.querySelectorAll("#header-container input[type='checkbox']");
             const headerInputs = document.querySelectorAll("#header-container input[name='headerKeys']");
 
             checkboxes.forEach((checkbox, index) => {
                 if (checkbox.checked) {
-                    selectedKeys.push(headerInputs[index].value);
+                    selectedHeaderIndexes.push(index);
                 }
             });
 
-            return selectedKeys.join(", ");
+            return selectedHeaderIndexes.join(", ");
         }
 
         document.getElementById("form").addEventListener("submit", function(event) {
-            const selectedHeaders = getSelectedHeaders();
+            const selectedHeaderIndexes = getSelectedHeaderIndexes();
             const hiddenInput = document.createElement("input");
             hiddenInput.type = "hidden";
-            hiddenInput.name = "selectedHeaders";
-            hiddenInput.value = selectedHeaders;
+            hiddenInput.name = "selectedHeaderIndexes";
+            hiddenInput.value = selectedHeaderIndexes;
             this.appendChild(hiddenInput);
         });
 

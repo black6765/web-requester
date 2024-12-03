@@ -24,7 +24,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -109,7 +108,9 @@ public class RequestService {
             sb.append(" \\\n");
 
             for (int i = 0; i < request.getHeaderKeys().size(); i++) {
-                sb.append(String.format(" \\\n--header '%s: %s'", request.getHeaderKeys().get(i), request.getHeaderValues().get(i)));
+                if (request.getSelectedHeaderIndexes().contains(i)) {
+                    sb.append(String.format(" \\\n--header '%s: %s'", request.getHeaderKeys().get(i), request.getHeaderValues().get(i)));
+                }
             }
         }
 
@@ -225,19 +226,19 @@ public class RequestService {
         itemDTO.setHeaderKeys(request.getHeaderKeys());
         itemDTO.setHeaderValues(request.getHeaderValues());
         itemDTO.setBody(request.getBody());
-        itemDTO.setSelectedHeaders(request.getSelectedHeaders());
+        itemDTO.setSelectedHeaderIndexes(request.getSelectedHeaderIndexes());
     }
 
     private HttpHeaders getHttpHeadersByHeadersMap(Request request) {
         HttpHeaders httpHeaders = new HttpHeaders();
         List<String> headersKeys = request.getHeaderKeys();
         List<String> headersValues = request.getHeaderValues();
-        Set<String> selectedHeaders = request.getSelectedHeaders();
+        List<Integer> selectedHeaderIndexes = request.getSelectedHeaderIndexes();
 
         if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
             for (int i = 0; i < headersKeys.size(); i++) {
                 if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) {
-                    if (selectedHeaders != null && selectedHeaders.contains(headersKeys.get(i))) {
+                    if (selectedHeaderIndexes != null && selectedHeaderIndexes.contains(i)) {
                         // Hidden function: header value "{{#NUM}}" replaced 100000 ~ 999999(6 digits number)
                         httpHeaders.add(headersKeys.get(i), headersValues.get(i).replace("{{#NUM}}", String.valueOf((int) (Math.random() * 899999) + 100000)));
                     }

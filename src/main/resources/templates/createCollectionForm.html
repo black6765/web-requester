@@ -175,26 +175,26 @@
             toggleEditorVisibility();
         };
 
-        function getSelectedHeaders() {
-            const selectedKeys = [];
+        function getSelectedHeaderIndexes() {
+            const selectedHeaderIndexes = [];
             const checkboxes = document.querySelectorAll("#header-container input[type='checkbox']");
-            const headerInputs = document.querySelectorAll("#header-container input[name='headersKey']");
+            const headerInputs = document.querySelectorAll("#header-container input[name='headerKeys']");
 
             checkboxes.forEach((checkbox, index) => {
                 if (checkbox.checked) {
-                    selectedKeys.push(headerInputs[index].value);
+                    selectedHeaderIndexes.push(index);
                 }
             });
 
-            return selectedKeys.join(", ");
+            return selectedHeaderIndexes.join(", ");
         }
 
         document.getElementById("itemForm").addEventListener("submit", function(event) {
-            const selectedHeaders = getSelectedHeaders();
+            const selectedHeaderIndexes = getSelectedHeaderIndexes();
             const hiddenInput = document.createElement("input");
             hiddenInput.type = "hidden";
-            hiddenInput.name = "selectedHeaders";
-            hiddenInput.value = selectedHeaders;
+            hiddenInput.name = "selectedHeaderIndexes";
+            hiddenInput.value = selectedHeaderIndexes;
             this.appendChild(hiddenInput);
         });
 

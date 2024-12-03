@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -24,7 +23,7 @@ public class ItemDTO {
         this.headerKeys = itemDTO.getHeaderKeys();
         this.headerValues = itemDTO.getHeaderValues();
         this.body = itemDTO.getBody();
-        this.selectedHeaders = itemDTO.getSelectedHeaders();
+        this.selectedHeaderIndexes = itemDTO.getSelectedHeaderIndexes();
     }
 
     @Setter
@@ -39,5 +38,5 @@ public class ItemDTO {
     public List<String> headerKeys;
     public List<String> headerValues;
     public String body;
-    public Set<String> selectedHeaders;
+    public List<Integer> selectedHeaderIndexes;
 }
