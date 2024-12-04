@@ -36,7 +36,6 @@ public class RequestService {
 
     public RequestFormDTO requestForm(final String collectionName, final String workspaceName, final String itemName) {
         ItemDTO itemDTO = getItem(collectionName, workspaceName, itemName);
-        new RequestFormDTO(itemDTO, collectionRepository.getCollectionsStore());
         return new RequestFormDTO(itemDTO, collectionRepository.getCollectionsStore());
     }
 
@@ -65,7 +64,6 @@ public class RequestService {
 
     public ResultDTO request(Request request) throws JsonProcessingException {
         HttpHeaders httpHeaders = getHttpHeadersByHeadersMap(request);
-        saveItem(request);
 
         String replacedUrl = request.getUrl();
         String currentEnvName = environmentRepository.getCurrentEnvName();
@@ -84,6 +82,8 @@ public class RequestService {
         } else {
             response = sendRequestAndGetResponse(replacedUrl, request, httpHeaders);
         }
+
+        saveItem(request);
 
         return new ResultDTO(collectionRepository.getCollectionsStore(), request.getHeaderKeys(), request.getHeaderValues(), convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response));
     }
@@ -104,6 +104,10 @@ public class RequestService {
     }
 
     private void appendHeaders(Request request, StringBuilder sb) {
+        if (request.getHeaderKeys() == null || request.getHeaderValues() == null) {
+            return;
+        }
+
         if (!request.getHeaderKeys().isEmpty()) {
             sb.append(" \\\n");
 
@@ -120,7 +124,7 @@ public class RequestService {
     }
 
     private void appendJsonBody(Request request, StringBuilder sb) {
-        if (!request.getBody().isEmpty()) {
+        if (request.getBody() != null && !request.getBody().isEmpty()) {
             sb.append(String.format(" \\\n--data '\n%s\n'", request.getBody()));
         }
     }
@@ -141,7 +145,7 @@ public class RequestService {
             Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<>() {
             });
             String jsonResponse = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
-            log.info("Json parsing success. response:\n" + jsonResponse);
+            log.info("Json parsing success. return:\n" + jsonResponse);
             return jsonResponse;
         } catch (JsonProcessingException e) {
             log.info("Json parsing failed. return response original string:\n" + response);
@@ -225,7 +229,7 @@ public class RequestService {
         itemDTO.setContentType(request.getContentType());
         itemDTO.setHeaderKeys(request.getHeaderKeys());
         itemDTO.setHeaderValues(request.getHeaderValues());
-        itemDTO.setBody(request.getBody());
+        itemDTO.setBody(convertStringToPrettyJson(request.getBody()));
         itemDTO.setSelectedHeaderIndexes(request.getSelectedHeaderIndexes());
     }
 
