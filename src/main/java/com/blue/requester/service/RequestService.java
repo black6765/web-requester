@@ -107,7 +107,9 @@ public class RequestService {
         if (request.getHeaderKeys() != null && request.getHeaderValues() != null && !request.getHeaderKeys().isEmpty()) {
             for (int i = 0; i < request.getHeaderKeys().size(); i++) {
                 if (request.getSelectedHeaderIndexes().contains(i)) {
-                    sb.append(String.format(" \\\n--header '%s: %s'", request.getHeaderKeys().get(i), request.getHeaderValues().get(i)));
+                    sb.append(String.format(" \\\n--header '%s: %s'",
+                            request.getHeaderKeys().get(i),
+                            replaceHeaderValuesRandomNumberString(request.getHeaderValues().get(i))));
                 }
             }
         }
@@ -231,22 +233,26 @@ public class RequestService {
 
     private HttpHeaders getHttpHeadersByHeadersMap(Request request) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        List<String> headersKeys = request.getHeaderKeys();
-        List<String> headersValues = request.getHeaderValues();
+        List<String> headerKeys = request.getHeaderKeys();
+        List<String> headerValues = request.getHeaderValues();
         List<Integer> selectedHeaderIndexes = request.getSelectedHeaderIndexes();
 
-        if (headersKeys != null && headersValues != null && !headersKeys.isEmpty() && !headersValues.isEmpty()) {
-            for (int i = 0; i < headersKeys.size(); i++) {
-                if (!ObjectUtils.isEmpty(headersKeys.get(i)) && !ObjectUtils.isEmpty(headersValues.get(i))) {
+        if (headerKeys != null && headerValues != null && !headerKeys.isEmpty() && !headerValues.isEmpty()) {
+            for (int i = 0; i < headerKeys.size(); i++) {
+                if (!ObjectUtils.isEmpty(headerKeys.get(i)) && !ObjectUtils.isEmpty(headerValues.get(i))) {
                     if (selectedHeaderIndexes != null && selectedHeaderIndexes.contains(i)) {
                         // Hidden function: header value "{{#NUM}}" replaced 100000 ~ 999999(6 digits number)
-                        httpHeaders.add(headersKeys.get(i), headersValues.get(i).replace("{{#NUM}}", String.valueOf((int) (Math.random() * 899999) + 100000)));
+                        httpHeaders.add(headerKeys.get(i), replaceHeaderValuesRandomNumberString(headerValues.get(i)));
                     }
                 }
             }
         }
 
         return httpHeaders;
+    }
+
+    private String replaceHeaderValuesRandomNumberString(String headerValue) {
+        return headerValue.replace("{{#NUM}}", String.valueOf((int) (Math.random() * 899999) + 100000));
     }
 
 }
