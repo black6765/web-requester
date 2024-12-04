@@ -104,13 +104,7 @@ public class RequestService {
     }
 
     private void appendHeaders(Request request, StringBuilder sb) {
-        if (request.getHeaderKeys() == null || request.getHeaderValues() == null) {
-            return;
-        }
-
-        if (!request.getHeaderKeys().isEmpty()) {
-            sb.append(" \\\n");
-
+        if (request.getHeaderKeys() != null && request.getHeaderValues() != null && !request.getHeaderKeys().isEmpty()) {
             for (int i = 0; i < request.getHeaderKeys().size(); i++) {
                 if (request.getSelectedHeaderIndexes().contains(i)) {
                     sb.append(String.format(" \\\n--header '%s: %s'", request.getHeaderKeys().get(i), request.getHeaderValues().get(i)));
@@ -118,7 +112,9 @@ public class RequestService {
             }
         }
 
-        if (request.getContentType().equals("json") && !request.getHeaderKeys().contains("Content-Type")) {
+        if (request.getContentType().equals("json")
+                && request.getHeaderKeys() != null
+                && !request.getHeaderKeys().contains("Content-Type")) {
             sb.append(" \\\n--header 'Content-Type: application/json'");
         }
     }
