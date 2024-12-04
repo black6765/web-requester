@@ -47,14 +47,16 @@
                             <br>
                             <div id="header-container" style="display: none;">
                                 <div class="input-group mb-2"
-                                     th:each="num : ${#numbers.sequence(0, headerKeys.size() - 1)}">
-                                    <input type="checkbox" class="form-check-input" value="${headerKeys.get(num)}"
-                                           th:checked="${selectedHeaderIndexes != null && selectedHeaderIndexes.contains(num)}"
+                                     th:each="headerKey : ${headerKeys}">
+                                    <input type="checkbox" class="form-check-input"
+                                           value="${headerKeys.get(headerKeyStat.index)}"
+                                           th:checked="${selectedHeaderIndexes != null && selectedHeaderIndexes.contains(headerKeyStat.index)}"
                                            style="margin-right: 10px;">
                                     <input type="text" class="form-control-sm" name="headerKeys"
-                                           placeholder="Header Key" th:value="${headerKeys.get(num)}">
+                                           placeholder="Header Key" th:value="${headerKeys.get(headerKeyStat.index)}">
                                     <input type="text" class="form-control-sm" name="headerValues"
-                                           placeholder="Header Value" th:value="${headerValues.get(num)}">
+                                           placeholder="Header Value"
+                                           th:value="${headerValues.get(headerKeyStat.index)}">
                                     <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del
                                     </button>
                                 </div>
