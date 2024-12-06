@@ -30,17 +30,7 @@ public class RequestController {
         ItemDTO itemDTO = requestForm.getItemDTO();
 
         model.addAttribute("collections", requestForm.getCollections());
-        model.addAttribute("url", itemDTO.getUrl());
-        model.addAttribute("headerKeys", itemDTO.getHeaderKeys());
-        model.addAttribute("headerValues", itemDTO.getHeaderValues());
-        model.addAttribute("body", itemDTO.getBody());
-        model.addAttribute("httpMethod", itemDTO.getHttpMethod());
-        model.addAttribute("contentType", itemDTO.getContentType());
-        model.addAttribute("selectedHeaderIndexes", itemDTO.selectedHeaderIndexes);
-
-        model.addAttribute("collectionName", itemDTO.getCollectionName());
-        model.addAttribute("workspaceName", itemDTO.workspaceName);
-        model.addAttribute("itemName", itemDTO.name);
+        model.addAttribute("itemDTO", itemDTO);
 
         return "requestForm";
     }
@@ -49,10 +39,6 @@ public class RequestController {
     public String request(RedirectAttributes redirectAttributes, @ModelAttribute Request request) throws JsonProcessingException {
         ResultDTO result = requestService.request(request);
 
-        redirectAttributes.addFlashAttribute("collections", result.getCollections());
-        redirectAttributes.addFlashAttribute("headerKeys", result.getHeaderKeys());
-        redirectAttributes.addFlashAttribute("headerValues", result.getHeaderValues());
-        redirectAttributes.addFlashAttribute("body", result.getBody());
         redirectAttributes.addFlashAttribute("response", result.getResponse());
         redirectAttributes.addFlashAttribute("status", result.getStatus());
 

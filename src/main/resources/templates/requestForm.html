@@ -7,9 +7,9 @@
         <div class="container-fluid px-4 pb-4">
             <form id="form" th:action="@{/request}" method="post">
 
-                <input type="hidden" name="collectionName" th:value="${collectionName}"/>
-                <input type="hidden" name="workspaceName" th:value="${workspaceName}"/>
-                <input type="hidden" name="itemName" th:value="${itemName}"/>
+                <input type="hidden" name="collectionName" th:value="${itemDTO.collectionName}"/>
+                <input type="hidden" name="workspaceName" th:value="${itemDTO.workspaceName}"/>
+                <input type="hidden" name="itemName" th:value="${itemDTO.name}"/>
 
                 <input type="hidden" name="curlRequest" id="curlRequest" value="false"/>
 
@@ -27,13 +27,13 @@
 
                         <div class="input-group mb-3">
                             <select class="form-select-sm" name="httpMethod" aria-label="HTTP Method">
-                                <option value="GET" th:selected="${httpMethod == 'GET'}">GET</option>
-                                <option value="POST" th:selected="${httpMethod == 'POST'}">POST</option>
-                                <option value="PUT" th:selected="${httpMethod == 'PUT'}">PUT</option>
-                                <option value="DELETE" th:selected="${httpMethod == 'DELETE'}">DELETE</option>
+                                <option value="GET" th:selected="${itemDTO.httpMethod == 'GET'}">GET</option>
+                                <option value="POST" th:selected="${itemDTO.httpMethod == 'POST'}">POST</option>
+                                <option value="PUT" th:selected="${itemDTO.httpMethod == 'PUT'}">PUT</option>
+                                <option value="DELETE" th:selected="${itemDTO.httpMethod == 'DELETE'}">DELETE</option>
                             </select>
                             <input type="text" name="url" id="url" class="form-control" placeholder="Enter URL"
-                                   aria-describedby="btnGroupAddon" required th:value="${url}">
+                                   aria-describedby="btnGroupAddon" required th:value="${itemDTO.url}">
                             <button class="btn btn-outline-dark" type="submit" id="button-addon2">Enter</button>
                         </div>
 
@@ -47,16 +47,17 @@
                             <br>
                             <div id="header-container" style="display: none;">
                                 <div class="input-group mb-2"
-                                     th:each="headerKey : ${headerKeys}">
+                                     th:each="headerKey : ${itemDTO.headerKeys}">
                                     <input type="checkbox" class="form-check-input"
-                                           value="${headerKeys.get(headerKeyStat.index)}"
-                                           th:checked="${selectedHeaderIndexes != null && selectedHeaderIndexes.contains(headerKeyStat.index)}"
+                                           value="${itemDTO.headerKeys.get(headerKeyStat.index)}"
+                                           th:checked="${itemDTO.selectedHeaderIndexes != null && itemDTO.selectedHeaderIndexes.contains(headerKeyStat.index)}"
                                            style="margin-right: 10px;">
                                     <input type="text" class="form-control-sm" name="headerKeys"
-                                           placeholder="Header Key" th:value="${headerKeys.get(headerKeyStat.index)}">
+                                           placeholder="Header Key"
+                                           th:value="${itemDTO.headerKeys.get(headerKeyStat.index)}">
                                     <input type="text" class="form-control-sm" name="headerValues"
                                            placeholder="Header Value"
-                                           th:value="${headerValues.get(headerKeyStat.index)}">
+                                           th:value="${itemDTO.headerValues.get(headerKeyStat.index)}">
                                     <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del
                                     </button>
                                 </div>
@@ -70,22 +71,22 @@
                             <label class="form-label">Content-Type</label>
                             <br>
                             <input type="radio" id="none" name="contentType" value="none"
-                                   th:checked="${contentType == 'none'}">
+                                   th:checked="${itemDTO.contentType == 'none'}">
                             <label for="none">none</label>
                             <input type="radio" id="json" name="contentType" value="json"
-                                   th:checked="${contentType == 'json'}">
+                                   th:checked="${itemDTO.contentType == 'json'}">
                             <label for="json">Json</label>
                             <input type="radio" id="text" name="contentType" value="text"
-                                   th:checked="${contentType == 'text'}">
+                                   th:checked="${itemDTO.contentType == 'text'}">
                             <label for="text">Text</label>
                             <input type="radio" id="formUrlEncoded" name="contentType" value="form-urlencoded"
-                                   th:checked="${contentType == 'form-urlencoded'}">
+                                   th:checked="${itemDTO.contentType == 'form-urlencoded'}">
                             <label for="formUrlEncoded">form-urlencoded</label>
                         </div>
 
                         <div class="mb-3">
                             <label for="body" class="form-label">Body</label>
-                            <textarea id="body" name="body" style="display:none;" th:text="${body}"></textarea>
+                            <textarea id="body" name="body" style="display:none;" th:text="${itemDTO.body}"></textarea>
                             <div id="editor"></div>
                         </div>
 
