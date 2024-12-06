@@ -97,14 +97,15 @@
 
                     <div class="col-6">
                         <div class="mb-3">
-                            <th:block th:if="${status != null}">
-                                <button id="statusButton" class="btn btn-outline-dark mb-3" type="button">
-                                    [[${status}]]
-                                </button>
-                            </th:block>
                             <div id="responseEditor"></div>
                             <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
                         </div>
+
+                        <th:block th:if="${status != null}">
+                            <button id="statusButton" class="btn btn-outline-dark mb-3" type="button">
+                                [[${status}]]
+                            </button>
+                        </th:block>
                     </div>
                 </div>
             </form>
