@@ -17,4 +17,5 @@ public class ResultDTO {
 
     String body;
     String response;
+    String status;
 }

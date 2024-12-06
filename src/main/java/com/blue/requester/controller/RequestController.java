@@ -54,6 +54,7 @@ public class RequestController {
         redirectAttributes.addFlashAttribute("headerValues", result.getHeaderValues());
         redirectAttributes.addFlashAttribute("body", result.getBody());
         redirectAttributes.addFlashAttribute("response", result.getResponse());
+        redirectAttributes.addFlashAttribute("status", result.getStatus());
 
         redirectAttributes.addAttribute("collectionName", request.getCollectionName());
         redirectAttributes.addAttribute("workspaceName", request.getWorkspaceName());

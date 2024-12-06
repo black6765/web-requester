@@ -4,6 +4,7 @@ import com.blue.requester.domain.dto.ItemDTO;
 import com.blue.requester.domain.dto.RequestFormDTO;
 import com.blue.requester.domain.dto.ResultDTO;
 import com.blue.requester.domain.request.Request;
+import com.blue.requester.domain.response.Response;
 import com.blue.requester.exception.EmptyBodyException;
 import com.blue.requester.exception.InvalidHttpMethodException;
 import com.blue.requester.message.ExceptionMessage;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -76,7 +78,7 @@ public class RequestService {
             replacedUrl = replaceVariables(replacedUrl, environmentRepository.getGlobalVariables());
         }
 
-        String response;
+        Response response;
         if (request.isCurlRequest()) {
             response = getCurlStringByRequest(request, replacedUrl);
         } else {
@@ -85,17 +87,17 @@ public class RequestService {
 
         saveItem(request);
 
-        return new ResultDTO(collectionRepository.getCollectionsStore(), request.getHeaderKeys(), request.getHeaderValues(), convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response));
+        return new ResultDTO(collectionRepository.getCollectionsStore(), request.getHeaderKeys(), request.getHeaderValues(), convertStringToPrettyJson(request.getBody()), convertStringToPrettyJson(response.getBody()), response.getStatus());
     }
 
-    private String getCurlStringByRequest(Request request, String replacedUrl) {
+    private Response getCurlStringByRequest(Request request, String replacedUrl) {
         StringBuilder sb = new StringBuilder();
 
         appendHttpMethodAndUrl(request, replacedUrl, sb);
         appendHeaders(request, sb);
         appendJsonBody(request, sb);
 
-        return new String(sb);
+        return new Response(null, new String(sb));
     }
 
     private void appendHttpMethodAndUrl(Request request, String replacedUrl, StringBuilder sb) {
@@ -151,7 +153,7 @@ public class RequestService {
         }
     }
 
-    private String sendRequestAndGetResponse(final String replacedUrl, final Request request, final HttpHeaders httpHeaders) {
+    private Response sendRequestAndGetResponse(final String replacedUrl, final Request request, final HttpHeaders httpHeaders) {
         WebClient client = WebClient.builder()
                 .build();
 
@@ -173,25 +175,25 @@ public class RequestService {
             default -> MediaType.TEXT_PLAIN;
         };
 
-        String responseBody = "{}";
-
+        ResponseEntity<String> responseEntity = null;
+        Response response = new Response();
         try {
             if (!isValidBodyAndHttpMethod) {
                 throw new EmptyBodyException();
             }
 
-            responseBody = switch (httpMethod) {
+            responseEntity = switch (httpMethod) {
                 case "GET" -> client.get()
                         .uri(replacedUrl)
                         .headers(h -> h.addAll(httpHeaders))
                         .retrieve()
-                        .bodyToMono(String.class)
+                        .toEntity(String.class)
                         .block();
                 case "DELETE" -> client.delete()
                         .uri(replacedUrl)
                         .headers(h -> h.addAll(httpHeaders))
                         .retrieve()
-                        .bodyToMono(String.class)
+                        .toEntity(String.class)
                         .block();
                 case "POST" -> client.post()
                         .uri(replacedUrl)
@@ -199,7 +201,7 @@ public class RequestService {
                         .contentType(selectedContentType)
                         .body(BodyInserters.fromValue(body))
                         .retrieve()
-                        .bodyToMono(String.class)
+                        .toEntity(String.class)
                         .block();
                 case "PUT" -> client.put()
                         .uri(replacedUrl)
@@ -207,17 +209,24 @@ public class RequestService {
                         .contentType(selectedContentType)
                         .body(BodyInserters.fromValue(body))
                         .retrieve()
-                        .bodyToMono(String.class)
+                        .toEntity(String.class)
                         .block();
                 default -> throw new InvalidHttpMethodException();
             };
         } catch (InvalidHttpMethodException e) {
-            responseBody = ExceptionMessage.HTTP_METHOD_UNAVAILABLE;
+            response.setStatus("HTTP_METHOD_UNAVAILABLE");
+            response.setBody(ExceptionMessage.HTTP_METHOD_UNAVAILABLE);
         } catch (Exception e) {
-            responseBody = e.getMessage();
+            response.setStatus("ERROR");
+            response.setBody(e.getMessage());
         }
 
-        return responseBody;
+        if (responseEntity != null) {
+            response.setStatus(responseEntity.getStatusCode().toString());
+            response.setBody(responseEntity.getBody());
+        }
+
+        return response;
     }
 
     private void saveItem(final Request request) {

@@ -89,13 +89,19 @@
                             <div id="editor"></div>
                         </div>
 
-                        <button onclick='convertCurlAndRequest()'>
-                            curl
+                        <button class="btn btn-outline-dark" onclick="convertCurlAndRequest()">
+                            CURL
                         </button>
                     </div>
 
+
                     <div class="col-6">
                         <div class="mb-3">
+                            <th:block th:if="${status != null}">
+                                <button id="statusButton" class="btn btn-outline-dark mb-3" type="button">
+                                    [[${status}]]
+                                </button>
+                            </th:block>
                             <div id="responseEditor"></div>
                             <textarea id="responseTextarea" style="display:none;" th:text="${response}"></textarea>
                         </div>
@@ -225,7 +231,7 @@
             responseEditor.setValue(initialResponse);
 
             editor.setSize("100%", "300px");
-            responseEditor.setSize("100%", "600px");
+            responseEditor.setSize("100%", "550px");
 
             toggleEditorVisibility();
         };
