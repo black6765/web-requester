@@ -83,8 +83,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="itemName" class="form-label">Name:</label>
-                            <input type="text" id="itemName" name="itemName" class="form-control" required>
+                            <label for="name" class="form-label">Name:</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
                         </div>
 
                         <div class="container-fluid px-4 mb-3">
@@ -199,16 +199,18 @@
         });
 
 
-      const editor = CodeMirror(document.getElementById("editor"), {
-          mode: {name: "javascript", json: true},
-          lineNumbers: true,
-          lineWrapping: true,
-          theme: "default",
-          styleActiveLine: true,
-          value: '',
-          foldGutter: true,
-          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
-      });
+        const editor = CodeMirror(document.getElementById("editor"), {
+            mode: {name: "javascript", json: true},
+            lineNumbers: true,
+            lineWrapping: true,
+            theme: "default",
+            styleActiveLine: true,
+            value: '',
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            foldGutter: true,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+        });
 
       document.getElementById('itemForm').onsubmit = function() {
           const jsonValue = editor.getValue();
@@ -220,9 +222,9 @@
           const inputGroup = document.createElement("div");
           inputGroup.className = "input-group mb-2";
           inputGroup.innerHTML = `
-                <input type="checkbox" class="form-check-input" value="\${header.key}" style="margin-right: 10px;">
-                <input type="text" class="form-control-sm" name="headersKey" placeholder="Header Key">
-                <input type="text" class="form-control-sm" name="headersValue" placeholder="Header Value">
+                <input type="checkbox" class="form-check-input" style="margin-right: 10px;">
+                <input type="text" class="form-control-sm" name="headerKeys" placeholder="Header Key">
+                <input type="text" class="form-control-sm" name="headerValues" placeholder="Header Value">
                 <button class="btn btn-danger" type="button" onclick="removeHeader(this)">Del</button>
           `;
           headerContainer.appendChild(inputGroup);

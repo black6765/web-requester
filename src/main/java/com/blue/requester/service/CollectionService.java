@@ -61,12 +61,8 @@ public class CollectionService {
         return "redirect:/collection/createForm";
     }
 
-    public void createItem(final String collectionName, final String workspaceName, final String itemName,
-                           final String url, final String httpMethod, final String body,
-                           final List<String> headersKeys, List<String> headersValues, final String contentType, final List<Integer> selectedHeaderIndexes) {
-
-        ItemDTO itemDTO = new ItemDTO(itemName, collectionName, workspaceName, url, httpMethod, contentType, headersKeys, headersValues, body, selectedHeaderIndexes);
-        collectionRepository.getCollectionsStore().get(collectionName).getWorkspaces().get(workspaceName).getItems().put(itemName, itemDTO);
+    public void putItemToCollectionRepository(ItemDTO itemDTO) {
+        collectionRepository.getCollectionsStore().get(itemDTO.getCollectionName()).getWorkspaces().get(itemDTO.getWorkspaceName()).getItems().put(itemDTO.getName(), itemDTO);
     }
 
     public void renameCollection(final String collectionName, final String workspaceName, final String itemName, final String targetName) {

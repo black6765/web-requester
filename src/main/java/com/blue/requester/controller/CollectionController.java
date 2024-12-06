@@ -1,5 +1,6 @@
 package com.blue.requester.controller;
 
+import com.blue.requester.domain.dto.ItemDTO;
 import com.blue.requester.repository.CollectionRepository;
 import com.blue.requester.service.CollectionService;
 import lombok.RequiredArgsConstructor;
@@ -34,18 +35,8 @@ public class CollectionController {
     }
 
     @PostMapping("/item")
-    public String createItem(
-            @RequestParam("collectionName") String collectionName,
-            @RequestParam("workspaceName") String workspaceName,
-            @RequestParam("itemName") String itemName,
-            @RequestParam("url") String url,
-            @RequestParam("httpMethod") String httpMethod,
-            @RequestParam("contentType") String contentType,
-            @RequestParam("body") String body,
-            @RequestParam(value = "headersKey", required = false) List<String> headersKeys,
-            @RequestParam(value = "headersValue", required = false) List<String> headersValues,
-            @RequestParam("selectedHeaderIndexes") List<Integer> selectedHeaderIndexes) {
-        collectionService.createItem(collectionName, workspaceName, itemName, url, httpMethod, body, headersKeys, headersValues, contentType, selectedHeaderIndexes);
+    public String createItem(@ModelAttribute ItemDTO itemDTO) {
+        collectionService.putItemToCollectionRepository(itemDTO);
         return "redirect:/collection/createForm";
     }
 
